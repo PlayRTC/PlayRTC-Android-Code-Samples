@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_row_bg"
+	android:paddingTop="10dp"
+	android:paddingBottom="10dp"
+	android:paddingLeft="10dp"
+	android:paddingRight="10dp" >
+ 
+
+    <!-- Channel Info -->
+    <TextView
+        android:id="@+id/row_channel_id"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textSize="18sp"
+        android:layout_marginTop="2dp" 
+        android:layout_marginLeft="10dp" 
+        android:textStyle="bold" 
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/row_channel_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row_channel_id"
+        android:layout_alignParentLeft="true"
+        android:textSize="18sp"
+        android:layout_marginTop="2dp" 
+        android:layout_marginLeft="10dp" 
+        android:textColor="#000000"/>
+    
+    <!-- Rating -->
+    <Button
+        android:id="@+id/row_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="2dip"
+        android:layout_marginRight="15dip"
+        android:textColor="#000000"
+        android:text="입장하기"
+        android:textSize="18dp" />
+
+</RelativeLayout>

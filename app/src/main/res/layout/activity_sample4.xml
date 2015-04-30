@@ -1,0 +1,115 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+    	android:layout_height="match_parent" 
+    	android:orientation="vertical"
+    	android:layout_alignParentTop="true">
+	    <RelativeLayout
+	        android:id="@+id/sample4_main_area" 
+			android:layout_width="match_parent"
+	        android:layout_height="0px"
+	        android:layout_weight="0.8"     
+	        android:background="#e0e0e0"
+	        android:layout_alignParentTop="true">
+	        
+	        <com.playrtc.sample.view.SlideLogView 
+	            android:id="@+id/sample4_logview"
+	            android:layout_width="360dp" 
+	            android:layout_height="match_parent"
+	            android:scrollbars="vertical"
+	            android:layout_alignParentLeft="true"
+	            android:textSize="13sp"
+	            android:textColor="#000000"
+	            android:text=""
+	            android:background="@drawable/log_border" 
+	            android:visibility="invisible"/>
+		    
+			<com.playrtc.sample.sample4.Sample4ViewGroup 
+			    android:id="@+id/sample4_videogroup"
+				android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:layout_centerHorizontal="true"
+		        android:layout_centerVertical="true"
+		        android:background="#ffffff" >
+		        <!-- 
+				VGA 	640x480 (307k) 		4:3
+				SVGA 	800x600 (480k) 		4:3
+				XGA		1024x768 (786k) 	4:3
+				 -->
+				<com.playrtc.sample.view.DrawingView
+			        android:id="@+id/sample4_captureView"
+			        android:layout_width="1440px" 
+				    android:layout_height="1080px"
+				    android:focusable="true" 
+					android:clickable="true"
+					android:background="#F8FA82"
+					 android:layout_alignParentLeft="true"
+					 android:layout_centerVertical="true"
+					android:visibility="visible">
+		    	</com.playrtc.sample.view.DrawingView>
+		    	
+			</com.playrtc.sample.sample4.Sample4ViewGroup>
+			
+		</RelativeLayout>
+		
+		<RelativeLayout 
+		    android:id="@+id/sample4_controls"
+			android:layout_width="match_parent"
+	        android:layout_height="0px"
+	        android:layout_weight="0.2"
+	        android:layout_below="@id/sample4_main_area"
+	        android:background="#ffffff">
+		    
+		    <Button
+				android:id="@+id/btn_sample4_log"
+				android:layout_width="100dp"
+				android:layout_height="wrap_content"
+				android:layout_centerVertical="true"
+				android:layout_alignParentLeft="true"
+				android:layout_marginLeft="20dp"
+				android:textSize="14sp"
+				android:text="로그보기" />
+		    
+			<Button
+				android:id="@+id/btn_sample4_command"
+				android:layout_width="100dp"
+				android:layout_height="wrap_content"
+				android:layout_centerVertical="true"
+				android:layout_toRightOf="@id/btn_sample4_log"
+				android:layout_marginRight="50dp"
+				android:textSize="14sp"
+				android:text="Command" />
+		    
+			<Button
+				android:id="@+id/btn_sample4_channel"
+				android:layout_width="100dp"
+				android:layout_height="wrap_content"
+				android:layout_centerVertical="true"
+				android:layout_centerHorizontal="true"
+				android:textSize="14sp"
+				android:text="채널팝업" />
+			
+			<Button
+				android:id="@+id/btn_sample4_disconnect"
+				android:layout_width="120dp"
+				android:layout_height="wrap_content"
+				android:layout_centerVertical="true"
+				android:layout_alignParentRight="true"
+				android:layout_marginRight="20dp"
+				android:textSize="14sp"
+				android:text="나가기" />
+
+		</RelativeLayout>
+	</LinearLayout>
+	<include layout="@layout/channel_popup" 
+	    android:id="@+id/sample4_channel_info"
+    	android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_centerHorizontal="true"
+		android:layout_centerVertical="true"
+	    android:visibility="invisible" />	
+</RelativeLayout>

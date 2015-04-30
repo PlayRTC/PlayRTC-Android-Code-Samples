@@ -1,0 +1,426 @@
+
+<!DOCTYPE html>
+<html> 
+<head> 
+<meta charset="UTF-8" />
+<meta name="viewport" content="initial-scale=1, maximum-scale=2.868, minimum-scale=1, user-scalable=yes, width=device-width, target-densitydpi=medium-dpi">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-touch-fullscreen" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>SKT PlayRTC Demo</title>
+<style>
+table {
+	width : 100%;
+	height : 100%;
+	font-size :10pt;
+	max-width : 900px;
+	margin :0 auto;
+}
+th {
+	text-align : left;
+	background-color:#dddddd;
+	border: 1px solid gray;
+	padding: 5px 10px 5px 10px;
+}
+th.class {
+	background-color:#bcbcbc;
+ 	font-size :14pt;
+ 	padding : 10px 2px 10px 10px;
+}
+
+td {
+	text-align : left;
+	text-indent : 10px;
+}
+
+</style>
+<script>
+
+function onGoSample()
+{
+	if(window.playrtc)window.playrtc.goPlayRTC();
+}
+
+function uploadMonitorData()
+{
+	if(window.playrtc)window.playrtc.uploadMonitorData();
+}
+
+function initPage() {
+	
+}
+
+</script>		
+</head> 
+<body onload="initPage()"> 
+<center>
+	<h2>SKT PlayRTC for Android </h2>
+</center>
+<center>
+	<input type="button" style="height:40px;" value="PlayRTC Sample 실행하기" onclick="onGoSample();">
+	<input type="button" style="height:40px;width:180px;" value="모니터링 업로드" onclick="uploadMonitorData();">
+</center>
+<hr/>
+<center>
+	<h2>SKT PlayRTC API </h2>
+</center>
+<table>
+	<tr>
+		<th class="class">
+PlayRTC Class
+		</th>
+	</tr>
+	<tr>
+		<td>
+<br>
+<b>public PlayRTC(Activity activity, IPlayRTCServiceHelper serviceHelper,  IPlayRTCEvent observer)</b><br>
+<br>
+<b>Parameters</b><br>
+- <b>activity</b> Activity, application 사용자 아이디 <br>
+- <b>serviceHelper</b> IPlayRTCServiceHelper, 서비스 Helper와 API를 연동하기 위한 Interface 구현 객체 <br>
+- <b>observer</b> IPlayRTCEvent, IPlayRTCEvent, PlayRTC Event 리스너<br>
+<br>
+<b>Return</b><br>
+없음<br>
+<br>
+PlayRTC 서비스 구현의 주요 단계는 다음과 같다.<br><br>
+<b>1.	PlayRTC Service Helper 객체 생성</b><br>
+&nbsp;&nbsp;PlayRTC 플랫폼 Service를 위한 PlayRTC Service 연동 객체를 생성한다. Service 연동 객체는 PlayRTC Service와의 인터페이스와 PlayRTC Service 서버와의 인터페이스를 구현한 객체이다. PlayRTC SDK는 Service 인터페이스 연동부가 구현 되어 있으며, Service 연동 객체는 Service 인터페이스를 구현하고 있어야 한다.<br> 
+<br>
+<b>2.	PlayRTC 객체 생성</b><br>
+&nbsp;&nbsp;PlayRTC 객체를 생성한다. 객체 생성 시 Service Helper 구현 객체를 전달하며, 객체 생성 후 서비스 환경설정을 위해 PlayRTC 객체에서 PlayRTCSettings 객체를 얻어와 Service 설정 값을 지정한다. PlayRTCSettings 객체에 지정한 값은 PlayRTC 플랫폼 서비스에서 조회한 Service 설정에 우선하여 적용된다.<br>
+<br>
+<b>3.	PlayRTC 플랫폼 서비스 채널 입장</b><br>
+&nbsp;&nbsp;PlayRTC 플랫폼 채널 Service에 새로운 채널을 생성하거나, 기존의 채널에 입장하여 P2P연결 수립을 수행한다. PlayRTC 플랫폼 채널 Service는 channelId, token를 필요로 하며 이값은 채널 생성 또는 채널 입장 요청 시 내부적으로 전달 받는다.<br>
+<br>
+<b>4.	로컬 미디어 스트림 생성</b><br>
+&nbsp;&nbsp;채널 서버에 연결 되면 SDK는 로컬 영상/음성 스트림을 제어를 위한 PlayRTCMedia객체를 생성하여 onLocalMedia 인터페이스를 통해 전달하며, 전달 받은 PlayRTCMedia객체에 영상 출력 뷰를 전달하여 영상을 출력<br>
+<br>
+<b>5.	상대방과의 연결 수락 과정 진행</b><br>
+&nbsp;&nbsp;PlayRTCSetting의 channel.ring을 true로 설정하면 상호간에 연결 수락 과정을 진행하며, 상대방의로부터 연결 수락을 받은 경우와 상대방으로부터의 연결 수락 의사를 수신한 경우 등  두 개의 상황을 처리<br>
+<br>
+<b>6.	연결 수립 후 원격 미디어 스트림 출력 </b><br>
+&nbsp;&nbsp;P2P연결 수립 후 상대방의 영상/음성 스트림을 제어를 위한 PlayRTCMedia객체를 생성하여 onRemoteMedia 인터페이스를 통해 전달하며, 전달 받은 PlayRTCMedia객체에 영상 출력 뷰를 전달하여 영상을 출력<br>
+<br>
+<b>7.	PlayRTC의 상태 변경 정보와 오류 정보 처리</b><br>
+&nbsp;&nbsp;Android SDK의 Toast와 PlayRTC SDK의 LogUtil 로그 뷰 객체를 이용하여 모류 및 상태 정보를 출력<br>
+<br>
+<b>8.	상대방과의 연결 종료 처리</b><br>
+<br><br>
+		</td>
+	</tr>
+	
+	
+	<tr>
+		<th>
+public void createChannel(JSONObject parameters)
+		</th>
+	</tr>
+	<tr>
+		<td>
+PlayRTC 플랫폼 채널 서비스에 새로 채널을 생성한다.<br>
+채널 생성 시 채널아이디와 서비스 설정 정보, 사용자 토큰을 전달 받아 채널에 입장한다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>parameters</b> JSONObject, 채널 및 사용자 관련 부가 정보를 전달할 수 있다. <br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+
+	<tr>
+		<th>
+public void connectChannel(String channelId, JSONObject parameters)
+		</th>
+	</tr>
+	<tr>
+		<td>
+PlayRTC 플랫폼 채널 서비스에 생성 되어 있는 채널에 입장한다.<br>
+채널아이디와 서비스 설정 정보, 사용자 토큰을 전달 받아 채널에 입장한다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>channelId</b> String, PlayRTC 플랫폼 채널 서비스의 채널 아이디 <br>
+- <b>parameters</b> JSONObject, 사용자 관련 부가 정보를 전달할 수 있다. <br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+
+	<tr>
+		<th>
+public void disconnectChannel(String channelId, String peerId)
+		</th>
+	</tr>
+	<tr>
+		<td>
+PlayRTC 플랫폼 채널 서비스의 채널에서 퇴장한다.<br>
+disconnectChannel를 호출하면 채널에 사용자(userUid)의 퇴장을 알리고, 채널서비스는 채널이 있는 모든 사용자에게 특정 사용자(peerId)의 퇴장을 통보한 후 연결을 종료한다.<br>
+채널에서 연결을 종료 하면 PlayRTC SDK는 onCloseChannel 이벤트 인터페이스로 사용자(peerId)에게 채널 연결 종료를 알려 준다.<br>
+채널에 있는 사른 사용자는 PlayRTC SDK의 onOtherCloseChannel 이벤트 인터페이스로 사용자(peerId)의 채널 연결 종료를 알려 준다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>channelId</b> String, PlayRTC 플랫폼 채널 서비스의 채널 아이디<br>
+- <b>peerId</b> String, 채널을 퇴장하는 PlayRTC 플랫폼 채널 서비스의 User 아이디<br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+		<tr>
+		<th>
+public void deleteChannel(final String channelId)
+		</th>
+	</tr>
+	<tr>
+		<td>
+PlayRTC 플랫폼 채널 서비스의 채널을 종료한다.<br>
+deleteChannel를 호출하면 채널에 채널 종료를 알리고, 채널서비스는 채널이 있는 모든 사용자에게 채널 종료를 통보한 후 모든 연결을 종료한다.<br>
+채널에서 연결이 종료되면 PlayRTC SDK는 onCloseChannel 이벤트 인터페이스로 사용자에게 채널 종료를 알려 준다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>channelId</b> String, PlayRTC 플랫폼 채널 서비스의 채널 아이디 <br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+			<th>
+public void userCommand(String peerId, String data)
+		</th>
+	</tr>
+	<tr>
+		<td>
+상대방에게 User-Defined Command를  데이터 가공없이 그대로 전달한다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>peerId</b> String, PlayRTC 플랫폼 채널 서비스의 User 아이디<br>
+- <b>data</b> String, 데이터 문자열 데이터 형식은 개별 application에서 정의 한 형태<br> 
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+				<th>
+public void accept(String peerId)
+		</th>
+	</tr>
+	<tr>
+		<td>
+ring 요청을 받은 경우 연결 수락 메세지를 상대에게 전달한다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>peerId</b> String, PlayRTC 플랫폼 채널 서비스의 User 아이디<br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+	<th>
+public void reject(String peerId)
+		</th>
+	</tr>
+	<tr>
+		<td>
+ring 요청을 받은 경우 연결 거부 메세지를 상대에게 전달한다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>peerId</b> String, PlayRTC 플랫폼 채널 서비스의 User 아이디<br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+	<th>
+public void dispose()
+		</th>
+	</tr>
+	<tr>
+		<td>
+PlayRTC를 종료 처리한다.<br>
+<br>
+<b>Parameters</b><br>
+없음<br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+	<th>
+public String getUserPid()
+		</th>
+	</tr>
+	<tr>
+		<td>
+채널에 입장하여 할당 받은 User의 아이디를 반환한다. <br>
+<br>
+<b>Parameters</b><br>
+없음<br>
+<br>
+<b>Return</b> String, User peer id<br>
+없음
+		</td>
+	</tr>
+	
+	<th>
+public void onConnectivityChange(int type, boolean available, boolean connected)
+		</th>
+	</tr>
+	<tr>
+		<td>
+NetworkUtil의 연결 상태 변경 이벤트 발생 시 상태 정보를 전달 받는다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>type</b> int, TYPE_MOBILE : 0 , TYPE_WIFI: 1<br>
+- <b>available</b> boolean<br>
+- <b>connected</b> boolean<br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+		<tr>
+		<th class="class">
+IPlayRTCEvent Class
+		</th>
+	</tr>
+	<tr>
+		<td>
+<br>
+PlayRTC 객체의 이벤트를 전달 받기 위한 Event Listener Interface. <br>
+PlayRTC 객체 생성 시 IPlayRTCEvent 구현 객체를 전달해야한다.<br>
+ 		</td>
+ 	</tr>	
+ 	
+ 	
+ 	<th>
+public void onChannelCreate(String channelId)
+		</th>
+	</tr>
+	<tr>
+		<td>
+createchannel 메소드를 호출하여 생성된 채널 아이디를 전달 받는 인터페이스.<br>
+<br>
+<b>Parameters</b><br>
+- <b>channelId</b> String, 생성된 채널 아이디<br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+ 	
+ 	<th>
+public void onRing(String peerId)
+		</th>
+	</tr>
+	<tr>
+		<td>
+채널에 나중에 입장한 사용자로부터 연결 승락 요청을 전달 받기 위한 인터페이스.<br>
+PlayRTCSetting Channel객체의 ring항목을 true로 설정하면 채널에 나중에 입장한 사용자는 먼저 입장한 사용자에게 연결 승인 요청을 보낸다.<br>
+연결을 승인 하려면 accept메소드를 거절하려면 reject를 호춣한다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>peerId</b> String, 상대방의 사용자 아이디, 채널에서 발급받은 User의 아이디   <br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+ 	
+ 	<th>
+public void onAccept(String peerId)
+		</th>
+	</tr>
+	<tr>
+		<td>
+채널에 먼 입장한 사용자로부터 연결 승락을 받았을 때 호출되는 인터페이스.<br>
+상대방이 accept 메소드를 호춣.<br>
+<br>
+<b>Parameters</b><br>
+- <b>peerId</b> String, 상대방의 사용자 아이디, 채널에서 발급받은 User의 아이디   <br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+	<th>
+public void onReject(String peerId)
+		</th>
+	</tr>
+	<tr>
+		<td>
+채널에 먼 입장한 사용자로부터 연결 거부을 받았을 때 호출되는 인터페이스.<br>
+상대방이  reject 메소드를 호춣.<br>
+<br>
+<b>Parameters</b><br>
+- <b>peerId</b> String, 상대방의 사용자 아이디, 채널에서 발급받은 User의 아이디   <br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+	<th>
+public void onUserCommand(String peerId, String data)
+		</th>
+	</tr>
+	<tr>
+		<td>
+application에서 정의한 Command를 수신했을 때 호출되는 인터페이스.<br>
+상대방이  userCommand 메소드를 호춣.<br>
+<br>
+<b>Parameters</b><br>
+- <b>peerId</b> String, 상대방의 사용자 아이디, 채널에서 발급받은 User의 아이디   <br>
+- <b>data</b> String, 데이터 문자열, 데이터 형식은 개별 application에서 정의 한 형태 <br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+	<th>
+public void onAddLocalStream(PlayRTCMedia media)
+		</th>
+	</tr>
+	<tr>
+		<td>
+PlayRTC 객체가 로컬 미디어 스트림객체를 얻어 PlayRTCMedia를 생성하고 전달하기 위해 호출하는 인터페이스<br>
+PlayRTCMedia객체를 전달 받으면 IPlayRTCMediaEvent 인터페이스 객체를 전달 해야하고 PlayRTCVIdeView에 영싱 출력을 해야한다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>media</b> PlayRTCMedia<br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+	
+	<th>
+public void onAddRemoteStream(String peerId, PlayRTCMedia media)
+		</th>
+	</tr>
+	<tr>
+		<td>
+PlayRTC 객체가 P2P가 연결되어 상대방 미디어 스트림객체를 얻어 PlayRTCMedia를 생성하고 전달하기 위해 호출하는 인터페이스<br>
+PlayRTCMedia객체를 전달 받으면 IPlayRTCMediaEvent 인터페이스 객체를 전달 해야하고 PlayRTCVIdeView에 영싱 출력을 해야한다.<br>
+<br>
+<b>Parameters</b><br>
+- <b>media</b> PlayRTCMedia<br>
+- <b>media</b> PlayRTCMedia<br>
+<br>
+<b>Return</b><br>
+없음
+		</td>
+	</tr>
+</table>	
+</body>
+</html>
