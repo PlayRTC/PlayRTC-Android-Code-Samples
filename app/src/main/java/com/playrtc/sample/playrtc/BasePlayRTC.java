@@ -215,6 +215,7 @@ public class BasePlayRTC {
 	}
 	
 	/**
+	 *
 	 * 상대방에게 User-Defined Command를  데이터 가공없이 그대로 전달한다.<br>
 	 * @param peerId String, PlayRTC 플랫폼 채널 서비스의 User 아이디
 	 * @param data String, 데이터 문자열 데이터 형식은 개별 application에서 정의 한 형태 
