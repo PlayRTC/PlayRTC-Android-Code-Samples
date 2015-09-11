@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity" 
+    android:gravity="center"
     android:background="#f0f0f0">
 	
     
@@ -11,10 +12,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="26sp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="2dp"
         android:textColor="#000000"
         android:text="@string/playrtc_sample" />
-    
     
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -26,13 +26,13 @@
 			android:layout_width="190dp"
 			android:layout_height="wrap_content"
 			android:textSize="14sp"
-			android:text="@string/btn_go_sample1" />
+			android:text="@string/btn_sample_playrtc" />
 	   	
 	     <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textColor="#000000"
-	        android:text="@string/go_sample1" />
+	        android:text="@string/sample_playrtc1" />
      
      </LinearLayout>
      
@@ -48,17 +48,16 @@
 			android:layout_width="190dp"
 			android:layout_height="wrap_content"
 			android:textSize="14sp"
-			android:text="@string/btn_go_sample2" />
+			android:text="@string/btn_sample_playrtc" />
 	    
 	    <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textColor="#000000"
-	        android:text="@string/go_sample2" />
+	        android:text="@string/sample_playrtc2" />
     </LinearLayout>
     
-
-    <LinearLayout
+	<LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -69,33 +68,32 @@
 			android:layout_width="190dp"
 			android:layout_height="wrap_content"
 			android:textSize="14sp"
-			android:text="@string/btn_go_sample3" />
+			android:text="@string/btn_sample_playrtc" />
 	    
 	    <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textColor="#000000"
-	        android:text="@string/go_sample3" />
+	        android:text="@string/sample_playrtc3" />
     </LinearLayout>
+    
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-	    
-	    
+    
 	    <Button
 			android:id="@+id/btn_go_sample4"
 			android:layout_width="190dp"
 			android:layout_height="wrap_content"
 			android:textSize="14sp"
-			android:text="@string/btn_go_sample4" />
+			android:text="@string/btn_sample_playrtc" />
 	    
 	    <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textColor="#000000"
-	        android:text="@string/go_sample4" />
+	        android:text="@string/sample_playrtc4" />
     </LinearLayout>
-    
 </LinearLayout>
