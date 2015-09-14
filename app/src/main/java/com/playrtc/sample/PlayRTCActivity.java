@@ -68,8 +68,8 @@ import android.widget.RelativeLayout.LayoutParams;
  * - PlayRTCAudioManager pAudioManager
  *     Audio 출력 디바이스를 제어하는 PLayRTC Util Class
  * </pre>
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * <b>PlayRTC 구현</b>
  * <pre>
  * 1. PlayRTCSettings 생성
@@ -255,7 +255,7 @@ public class PlayRTCActivity extends Activity {
             PlayRTCSettings settings = createPlayRTCSettings(playrtcType);
 
 			/*
-			 * 2. PlayRTC 인스턴스를 생성
+             * 2. PlayRTC 인스턴스를 생성
 			 * PlayRTC 인터페이스를 구현한 객체 인스턴스를 생성하고 PlayRTC를 반환한다. static  <br>
 			 * settings PlayRTCSettings, PlayRTC 서비스 설정 정보 객체
 			 * observer PlayRTCObserver, PlayRTC Event 리스너
@@ -279,7 +279,7 @@ public class PlayRTCActivity extends Activity {
 
         Point displaySize = new Point();
         getWindowManager().getDefaultDisplay().getSize(displaySize);
-		
+
 		/*
 		 * PlayRTCAudioManager를 사용하므로 주석 처리 
 		audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
