@@ -29,8 +29,7 @@ public class MainActivity extends Activity {
         initUIControls();
     }
 
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LAUNCHED_PLAYRTC) {
             if (resultCode == RESULT_OK) {
             }
@@ -87,28 +86,28 @@ public class MainActivity extends Activity {
      */
     private void initUIControls() {
         // 영상 + 음성 + Data Sample
-        ((Button) this.findViewById(R.id.btn_go_sample1)).setOnClickListener(new Button.OnClickListener() {
+        this.findViewById(R.id.btn_go_sample1).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goPlayRTC(1);
             }
         });
         // 영상 + 음성 Sample
-        ((Button) this.findViewById(R.id.btn_go_sample2)).setOnClickListener(new Button.OnClickListener() {
+        this.findViewById(R.id.btn_go_sample2).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goPlayRTC(2);
             }
         });
         // 음성 only Sample
-        ((Button) this.findViewById(R.id.btn_go_sample3)).setOnClickListener(new Button.OnClickListener() {
+        this.findViewById(R.id.btn_go_sample3).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goPlayRTC(3);
             }
         });
         //  Data  only Sample
-        ((Button) this.findViewById(R.id.btn_go_sample4)).setOnClickListener(new Button.OnClickListener() {
+        this.findViewById(R.id.btn_go_sample4).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goPlayRTC(4);
