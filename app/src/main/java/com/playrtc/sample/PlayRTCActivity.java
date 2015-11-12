@@ -15,6 +15,11 @@ import com.sktelecom.playrtc.PlayRTC.PlayRTCAudioType;
 import com.sktelecom.playrtc.PlayRTC.PlayRTCCode;
 import com.sktelecom.playrtc.PlayRTC.PlayRTCStatus;
 import com.sktelecom.playrtc.config.PlayRTCSettings;
+
+// sdk v2.2.0
+import com.sktelecom.playrtc.config.PlayRTCConfig;
+import com.sktelecom.playrtc.config.PlayRTCVideoConfig.CameraType;
+
 import com.sktelecom.playrtc.config.ConstraintSetting.PlayRTCFrame;
 import com.sktelecom.playrtc.exception.RequiredConfigMissingException;
 import com.sktelecom.playrtc.exception.RequiredParameterMissingException;
@@ -73,8 +78,10 @@ import android.widget.RelativeLayout.LayoutParams;
  * <b>PlayRTC 구현</b>
  * <pre>
  * 1. PlayRTCSettings 생성
+ *   v2.1.2
  *   PlayRTCActivity#onCreate {@link PlayRTCActivity#createPlayRTCSettings(int)}
- *
+ *   v2.2.0
+ *   PlayRTCActivity#onCreate {@link PlayRTCActivity#createPlayRTCConfig(int)}
  * 2. PlayRTC 인스턴스를 생성
  *   PlayRTCSettings, PlayRTCObserver 구현체 전달
  *   PlayRTCActivity#onCreate : PlayRTCFactory.newInstance(settings, (PlayRTCObserver)new PlayRTCObserverImpl())
@@ -235,6 +242,9 @@ public class PlayRTCActivity extends Activity {
      */
     private int playrtcType = 1;
 
+    // use sdk v2.2.0
+    private boolean USE_SDK2_2_0 = true;
+
     @SuppressLint("NewApi")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -252,15 +262,29 @@ public class PlayRTCActivity extends Activity {
 
         try {
             // 1. MainActivity에서 선택한 Sample Type에 맞게 PlayRTCSettings 개체 생성
-            PlayRTCSettings settings = createPlayRTCSettings(playrtcType);
+            if(USE_SDK2_2_0 == false) {
+                // sdk 2.1.2
+                PlayRTCSettings settings = createPlayRTCSettings(playrtcType);
+                /*
+                 * 2. PlayRTC 인스턴스를 생성
+                 * PlayRTC 인터페이스를 구현한 객체 인스턴스를 생성하고 PlayRTC를 반환한다. static  <br>
+                 * settings PlayRTCSettings, PlayRTC 서비스 설정 정보 객체
+                 * observer PlayRTCObserver, PlayRTC Event 리스너
+                 */
+                this.playRTC = PlayRTCFactory.newInstance(settings, (PlayRTCObserver) new PlayRTCObserverImpl());
+            }
+            else {
+                // sdk 2.2.0
+                PlayRTCConfig config = createPlayRTCConfig(playrtcType);
+                /*
+                 * 2. PlayRTC 인스턴스를 생성
+                 * PlayRTC 인터페이스를 구현한 객체 인스턴스를 생성하고 PlayRTC를 반환한다. static  <br>
+                 * settings PlayRTCSettings, PlayRTC 서비스 설정 정보 객체
+                 * observer PlayRTCObserver, PlayRTC Event 리스너
+                 */
+                this.playRTC = PlayRTCFactory.createPlayRTC(config, (PlayRTCObserver) new PlayRTCObserverImpl());
+            }
 
-			/*
-             * 2. PlayRTC 인스턴스를 생성
-			 * PlayRTC 인터페이스를 구현한 객체 인스턴스를 생성하고 PlayRTC를 반환한다. static  <br>
-			 * settings PlayRTCSettings, PlayRTC 서비스 설정 정보 객체
-			 * observer PlayRTCObserver, PlayRTC Event 리스너
-			 */
-            this.playRTC = PlayRTCFactory.newInstance(settings, (PlayRTCObserver) new PlayRTCObserverImpl());
 
         } catch (UnsupportedPlatformVersionException e) {
             e.printStackTrace();
@@ -289,49 +313,52 @@ public class PlayRTCActivity extends Activity {
 		*/
 
         /**
-         * 3. PlayRTCAudioManager 생성 및 구동
+         * 3. PlayRTCAudioManager 생성 및 구동. sdk v2.1.2
+         * The sdk 2.2.0 버전은  PlayRTCConfig에서 PlayRTCAudioManager사용 여부를 지정
          * PlayRTCAudioManager 인스턴스 생성. static
          * @param context Context
          * @param runnable Runnable, Audio 출력 디비이스가 변경될 때 호출 받을 Runnable 객체
          * @return PlayRTCAudioManager
          */
-        pAudioManager = PlayRTCAudioManager.create(this, new Runnable() {
-            @Override
-            public void run() {
+        if(USE_SDK2_2_0 == false) {
+            //sdk v2.2.0 에서는  PlayRTCConfig 에서 PlayRTCAudioManager를 사용하도록 설정.
+            pAudioManager = PlayRTCAudioManager.create(this, new Runnable() {
+                @Override
+                public void run() {
 
-	        	/* Audio 출력 디비이스 조회 한후 PlayRTCV에 전달한다. 
+	        	/* Audio 출력 디비이스 조회 한후 PlayRTC에 전달한다.
 	             * AudioDevice : Audio 출력 장치의 종류를 정의.
 	             * - WIRED_HEADSET
 	             * - SPEAKER_PHONE
 	             * - EARPIECE
-	             * - BLUETOOTH
+	             * - BLUETOOTH, 미지원
 	             */
-                AudioDevice audioDivece = pAudioManager.getSelectedAudioDevice();
-                if (playRTC != null) {
-                    if (audioDivece == AudioDevice.WIRED_HEADSET) {
-                        // PlayRTC SDK에 Audio Path를 전달한다.
-                        playRTC.notificationAudioType(PlayRTCAudioType.AudioReceiver);
-                        Log.i(LOG_TAG, "AudioDevice audioDivece = AudioReceiver");
-                    } else if (audioDivece == AudioDevice.SPEAKER_PHONE) {
-                        // PlayRTC SDK에 Audio Path를 전달한다.
-                        playRTC.notificationAudioType(PlayRTCAudioType.AudioSpeaker);
-                        Log.i(LOG_TAG, "AudioDevice audioDivece = AudioSpeaker");
-                    } else if (audioDivece == AudioDevice.EARPIECE) {
-                        // PlayRTC SDK에 Audio Path를 전달한다.
-                        playRTC.notificationAudioType(PlayRTCAudioType.AudioEarphone);
-                        Log.i(LOG_TAG, "AudioDevice audioDivece = AudioEarphone");
-                    } else if (audioDivece == AudioDevice.BLUETOOTH) {
-                        // PlayRTC SDK에 Audio Path를 전달한다.
-                        playRTC.notificationAudioType(PlayRTCAudioType.AudioBluetooth);
-                        Log.i(LOG_TAG, "AudioDevice audioDivece = AudioBluetooth");
+                    AudioDevice audioDivece = pAudioManager.getSelectedAudioDevice();
+                    if (playRTC != null) {
+                        if (audioDivece == AudioDevice.WIRED_HEADSET) {
+                            // PlayRTC SDK에 Audio Path를 전달한다.
+                            playRTC.notificationAudioType(PlayRTCAudioType.AudioReceiver);
+                            Log.i(LOG_TAG, "AudioDevice audioDivece = AudioReceiver");
+                        } else if (audioDivece == AudioDevice.SPEAKER_PHONE) {
+                            // PlayRTC SDK에 Audio Path를 전달한다.
+                            playRTC.notificationAudioType(PlayRTCAudioType.AudioSpeaker);
+                            Log.i(LOG_TAG, "AudioDevice audioDivece = AudioSpeaker");
+                        } else if (audioDivece == AudioDevice.EARPIECE) {
+                            // PlayRTC SDK에 Audio Path를 전달한다.
+                            playRTC.notificationAudioType(PlayRTCAudioType.AudioEarphone);
+                            Log.i(LOG_TAG, "AudioDevice audioDivece = AudioEarphone");
+                        } else if (audioDivece == AudioDevice.BLUETOOTH) {
+                            // PlayRTC SDK에 Audio Path를 전달한다.
+                            playRTC.notificationAudioType(PlayRTCAudioType.AudioBluetooth);
+                            Log.i(LOG_TAG, "AudioDevice audioDivece = AudioBluetooth");
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // PlayRTCAudioManager 구동
-        pAudioManager.init();
-
+            // PlayRTCAudioManager 구동
+            pAudioManager.init();
+        }
         // 채널 팝업 출력
         if (TextUtils.isEmpty(channelId)) {
             this.channelInfoView.showChannelList();
@@ -474,7 +501,8 @@ public class PlayRTCActivity extends Activity {
     @Override
     protected void onDestroy() {
         Log.e(LOG_TAG, "onDestroy===============================");
-
+        // The sdk 2.2.0 버전은 PlayRTCConfig 설정에서 내부 동작으로 지정.
+        // PlayRTCConfig에서 사용 설정한 경우(USE_SDK2_2_0=true) pAudioManager 는  null value
         if (pAudioManager != null) {
             pAudioManager.close();
             pAudioManager = null;
@@ -801,8 +829,6 @@ public class PlayRTCActivity extends Activity {
          * PlayRTC의 오류 발생 이벤트 처리, PlayRTC의 enum 코드 참고
          *
          * @param obj     PlayRTC
-         * @param peerId  String, 상대방 사용자의 peer 아이디
-         * @param peerUid String, 상대방 사용자의 아이디
          * @param status  PlayRTCStatus PlayRTC의 상태 변경 코드 참고
          * @param code    PlayRTCCode PlayRTC의 오류 코드 참고
          * @param desc    String, Description
@@ -904,7 +930,90 @@ public class PlayRTCActivity extends Activity {
         return settings;
     }
 
+    private PlayRTCConfig createPlayRTCConfig(int runType) {
+        /* PlayRTC 서비스 설정 */
+        PlayRTCConfig config = PlayRTCFactory.createConfig();
+        config.setAndroidContext(this.getApplicationContext());
+        config.setProjectId(TDCProjectId);
 
+        config.setRingEnable(false);
+
+        // 양상 + 음성 + Data
+        if(runType == 1) {
+            config.video.setEnable(true);
+            //전방 카메라 사용
+            config.video.setCameraType(CameraType.Front);
+            // video 해상도는 기본 640x480,
+            // min - max 범위를 다르게 지정하면 내부적으로 max 해상도 사용
+            config.video.setMaxFrameSize(640, 480);
+            config.video.setMinFrameSize(640, 480);
+
+            config.audio.setEnable(true);   /* 음성 전송 사용 */
+            //SDK 2.2.0에서는 PlayRTCAudioManager를 사용하도록 설정할수 있음.
+            // false로 지정하면 sdk 2.1.2에서 사용하는 방법으로 구현해야함.
+            config.audio.setAudioManagerEnable(true);
+            config.data.setEnable(true);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
+
+        }
+        // 영상 + 음성
+        else if(runType == 2){
+            config.video.setEnable(true);
+            //전방 카메라 사용
+            config.video.setCameraType(CameraType.Front);
+            // video 해상도는 기본 640x480,
+            // min - max 범위를 다르게 지정하면 내부적으로 max 해상도 사용
+            config.video.setMaxFrameSize(640, 480);
+            config.video.setMinFrameSize(640, 480);
+
+            config.audio.setEnable(true);   /* 음성 전송 사용 */
+
+            //SDK 2.2.0에서는 PlayRTCAudioManager를 사용하도록 설정할수 있음.
+            // false로 지정하면 sdk 2.1.2에서 사용하는 방법으로 구현해야함.
+            config.audio.setAudioManagerEnable(true);
+
+            config.data.setEnable(false);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
+
+
+        }
+        // 음성 only
+        else if(runType == 3){
+            // video  전송 안함.
+            config.video.setEnable(false);
+            // audio 전송 사용.
+            config.audio.setEnable(true);
+
+            //SDK 2.2.0에서는 PlayRTCAudioManager를 사용하도록 설정할수 있음.
+            // false로 지정하면 sdk 2.1.2에서 사용하는 방법으로 구현해야함.
+            config.audio.setAudioManagerEnable(true);
+
+            config.data.setEnable(false);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
+
+
+        }
+        // Data Only
+        else {
+            config.video.setEnable(false);  /* 영상 전송 안함 */
+            config.audio.setEnable(false);   /* 음성 전송 안함 */
+            config.data.setEnable(true);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
+        }
+
+        /**
+         * SDK Console 로그 레벨 지정
+         */
+        config.log.console.setLevel(PlayRTCConfig.WARN);
+
+		/* SDK 파일 로그 레벨 지정 */
+        config.log.file.setLevel(PlayRTCConfig.WARN);
+		/* 파일 로그를 남기려면 로그파일 폴더 지정 . [PATH]/yyyyMMdd.log , 10일간 보존 */
+		/* SDK 파일 로깅을 위한 로그 파일 경로, 파일 로깅을 사용하지 않는다면 Pass */
+        File logPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +
+                "/Android/data/" + this.getPackageName() + "/files/log");
+        config.log.file.setLogPath(logPath.getAbsolutePath());
+        config.log.file.setRolling(10); // 10일 유지
+
+
+        return config;
+    }
     /**
      * 5. 채널 서비스에 채널 생성/입장 요청
      * 채널 팝업 뷰의 PlayRTCChannelViewListener를 구현한 리스너 구현 Class<br>

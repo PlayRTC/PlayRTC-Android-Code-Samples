@@ -13,7 +13,7 @@ import com.sktelecom.playrtc.stream.PlayRTCData.PlayRTCFileReveType;
 import com.sktelecom.playrtc.stream.PlayRTCDataHeader;
 import com.sktelecom.playrtc.stream.PlayRTCData.PlayRTCDataCode;
 import com.sktelecom.playrtc.stream.PlayRTCData.PlayRTCDataStatus;
-import com.sktelecom.playrtc.util.android.TaskSynchronizer;
+
 import com.playrtc.sample.util.Utils;
 import com.playrtc.sample.view.PlayRTCLogView;
 
@@ -23,6 +23,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
+import android.os.Handler;
+import android.os.Looper;
 
 /**
  * PlayRTCData를 위한 Handler Class  <br>
@@ -307,7 +309,8 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                     @Override
                     public void onSuccess(PlayRTCData obj, String peerId, String peerUid, long id, long size) {
                         final long elasedTime = System.currentTimeMillis() - elaspedStart;
-                        TaskSynchronizer.post(new Runnable() {
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
                             public void run() {
                                 closeInputStream();
                                 Toast logToast = Toast.makeText(activity.getApplicationContext(), "elasedTime = " + elasedTime, Toast.LENGTH_LONG);
