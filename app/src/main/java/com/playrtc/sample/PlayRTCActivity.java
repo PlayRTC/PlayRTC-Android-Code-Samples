@@ -16,8 +16,11 @@ import com.sktelecom.playrtc.PlayRTC.PlayRTCCode;
 import com.sktelecom.playrtc.PlayRTC.PlayRTCStatus;
 import com.sktelecom.playrtc.config.PlayRTCSettings;
 
-// sdk v2.2.0
+// sdk v2.2.0 StatsReport
 import com.sktelecom.playrtc.config.PlayRTCConfig;
+import com.sktelecom.playrtc.PlayRTCStatsReport;
+import com.sktelecom.playrtc.PlayRTCStatsReport.RatingValue;
+
 import com.sktelecom.playrtc.config.PlayRTCVideoConfig.CameraType;
 
 import com.sktelecom.playrtc.config.ConstraintSetting.PlayRTCFrame;
@@ -30,6 +33,8 @@ import com.sktelecom.playrtc.stream.PlayRTCMedia;
 import com.sktelecom.playrtc.util.android.PlayRTCAudioManager;
 import com.sktelecom.playrtc.util.android.PlayRTCAudioManager.AudioDevice;
 import com.sktelecom.playrtc.util.ui.PlayRTCVideoView;
+//v2.2.1
+import com.sktelecom.playrtc.observer.PlayRTCStatsReportObserver;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -39,6 +44,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -48,6 +54,12 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+
+
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.annotation.SuppressLint;
 
 /**
  * PlayRTC를 구현한 Activity <br>
@@ -245,10 +257,30 @@ public class PlayRTCActivity extends Activity {
     // use sdk v2.2.0
     private boolean USE_SDK2_2_0 = true;
 
+    public static final String[] MANDATORY_PERMISSIONS = {
+            "android.permission.INTERNET",
+            "android.permission.CAMERA",
+            "android.permission.RECORD_AUDIO",
+            "android.permission.MODIFY_AUDIO_SETTINGS",
+            "android.permission.ACCESS_NETWORK_STATE",
+            "android.permission.CHANGE_WIFI_STATE",
+            "android.permission.ACCESS_WIFI_STATE",
+            "android.permission.READ_PHONE_STATE",
+            "android.permission.BLUETOOTH",
+            "android.permission.BLUETOOTH_ADMIN",
+            "android.permission.WRITE_EXTERNAL_STORAGE"
+    };
+
     @SuppressLint("NewApi")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rtc);
+
+        // Application permission 23
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+
+            checkPermission(MANDATORY_PERMISSIONS);
+        }
 
         resultIntent = new Intent();
         Intent intent = getIntent();
@@ -363,6 +395,32 @@ public class PlayRTCActivity extends Activity {
         if (TextUtils.isEmpty(channelId)) {
             this.channelInfoView.showChannelList();
             this.channelInfoView.show(600);
+        }
+    }
+    private final int MY_PERMISSION_REQUEST_STORAGE = 100;
+    @SuppressLint("NewApi")
+    private void checkPermission(String[] permissions) {
+
+        requestPermissions(permissions, MY_PERMISSION_REQUEST_STORAGE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSION_REQUEST_STORAGE:
+                int cnt = permissions.length;
+                for(int i = 0; i < cnt; i++ ) {
+
+                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED ) {
+
+                        Log.i(LOG_TAG, "Permission[" + permissions[i] + "] = PERMISSION_GRANTED");
+
+                    } else {
+
+                        Log.i(LOG_TAG, "permission[" + permissions[i] + "] always deny");
+                    }
+                }
+                break;
         }
     }
 
@@ -823,6 +881,55 @@ public class PlayRTCActivity extends Activity {
         public void onStateChange(final PlayRTC obj, String peerId, final String peerUid, PlayRTCStatus status, String desc) {
             //Utils.showToast(PlayRTCActivity.this, peerId+"  Status["+ status+ "]...");
             logView.appendLog(">>" + peerId + "  onStatusChange[" + status + "]...");
+
+            // v2.2.1
+            if(status == PlayRTCStatus.PeerSuccess) {
+                obj.startStatsReport(5000L, new PlayRTCStatsReportObserver(){
+                    @Override
+                    public void onStatsReport(PlayRTCStatsReport report) {
+                        /**
+                         * RatingValue
+                         * int getLevel()
+                         * float getValue()
+                         */
+                        RatingValue localVideoFl = report.getLocalVideoFractionLost();
+                        RatingValue localAudioFl = report.getLocalAudioFractionLost();
+                        RatingValue remoteVideoFl = report.getRemoteVideoFractionLost();
+                        RatingValue remoteAudioFl = report.getRemoteAudioFractionLost();
+
+                        String localReport = String.format("Local Report\n   ICE:%s\n   Frame:%sx%sx%s\n   Bandwidth[%sps]\n   RTT[%s]\n   RttRating[%d/%.4f]\n   VFractionLost[%d/%.4f]\n   AFractionLost[%d/%.4f]",
+                                report.getLocalCandidate(),
+                                report.getLocalFrameWidth(),
+                                report.getLocalFrameHeight(),
+                                report.getLocalFrameRate(),
+                                android.text.format.Formatter.formatFileSize(getApplicationContext(), report.getAvailableSendBandwidth()) + "",
+                                report.getRtt(),
+                                report.getRttRating().getLevel(),
+                                report.getRttRating().getValue(),
+                                localVideoFl.getLevel(),
+                                localVideoFl.getValue(),
+                                localAudioFl.getLevel(),
+                                localAudioFl.getValue());
+
+                        String remoteReport = String.format("Remote Report\n   ICE:%s\n   Frame:%sx%sx%s\n   Bandwidth[%sps]\n   VFractionLost[%d/%.4f]\n   AFractionLost[%d/%.4f]\n",
+                                report.getRemoteCandidate(),
+                                report.getRemoteFrameWidth(),
+                                report.getRemoteFrameHeight(),
+                                report.getRemoteFrameRate(),
+                                android.text.format.Formatter.formatFileSize(getApplicationContext(), report.getAvailableReceiveBandwidth()) + "",
+                                remoteVideoFl.getLevel(),
+                                remoteVideoFl.getValue(),
+                                remoteAudioFl.getLevel(),
+                                remoteAudioFl.getValue());
+
+
+                        Log.d("StatsReport", "-----------------------------------------------------");
+                        Log.d("StatsReport", localReport);
+                        Log.d("StatsReport", remoteReport);
+                        Log.d("StatsReport", "-----------------------------------------------------");
+                    }
+                });
+            }
         }
 
         /**
