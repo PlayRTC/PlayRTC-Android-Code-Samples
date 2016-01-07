@@ -566,6 +566,11 @@ public class PlayRTCActivity extends Activity {
             pAudioManager = null;
         }
 
+        // PlayRTC 인스턴스 해제
+        if(playRTC != null) {
+            playRTC.close();
+            playRTC = null;
+        }
         this.finish();
         super.onDestroy();
     }
@@ -1057,7 +1062,9 @@ public class PlayRTCActivity extends Activity {
 
             config.audio.setEnable(true);   /* 음성 전송 사용 */
             //SDK 2.2.0에서는 PlayRTCAudioManager를 사용하도록 설정할수 있음.
-            // false로 지정하면 sdk 2.1.2에서 사용하는 방법으로 구현해야함.
+            // false로 지정하면
+            //  1. sdk 2.1.2에서 사용하는 방법으로 구현해야함.
+            //  2. PlayRTC.startAudioManaer()를 호출,
             config.audio.setAudioManagerEnable(true);
             config.data.setEnable(true);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
 
