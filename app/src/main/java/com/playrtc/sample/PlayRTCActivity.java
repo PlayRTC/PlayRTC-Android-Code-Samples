@@ -1282,7 +1282,22 @@ public class PlayRTCActivity extends Activity {
             // 영상 전송을 사용하지 않으므로 화면에서 숨긴다.
             cameraBtn.setVisibility(View.INVISIBLE);
         }
-		
+        Button flashBtn = (Button) this.findViewById(R.id.btn_switch_flash);
+
+		/* 후방 카메라 플래쉬 On/Off, 후방 카메라 사용 시 작동  */
+        if (playrtcType == 1 || playrtcType == 2) {
+            flashBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean on = !playRTC.isBackCameraFlashOn();
+                    playRTC.switchBackCameraFlash(on);
+                }
+            });
+        } else {
+            // 영상 전송을 사용하지 않으므로 화면에서 숨긴다.
+            flashBtn.setVisibility(View.INVISIBLE);
+        }
+
 		/* DataChannel Text 전송 버튼 */
         Button btnText = (Button) this.findViewById(R.id.btn_text);
 		/* DataChannel Binary 전송 버튼 */
