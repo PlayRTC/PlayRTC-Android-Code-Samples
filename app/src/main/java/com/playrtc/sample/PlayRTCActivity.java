@@ -1290,7 +1290,7 @@ public class PlayRTCActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     boolean on = !playRTC.isBackCameraFlashOn();
-                    playRTC.switchBackCameraFlash(on);
+                    playRTC.setBackCameraFlash(on);
                 }
             });
         } else {
