@@ -4,7 +4,7 @@
     <string name="app_name">PlayRTCSample</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-    <string name="playrtc_sample">SKT PlayRTC Sample V2.2.3</string>
+    <string name="playrtc_sample">SKT PlayRTC Sample V2.2.4</string>
     <string name="btn_sample_playrtc">PlayRTC 실행</string>
 	<string name="sample_playrtc1">영상 + 음성 + data를 실행합니다.</string>
 	<string name="sample_playrtc2">영상 + 음성을 실행합니다.</string>
