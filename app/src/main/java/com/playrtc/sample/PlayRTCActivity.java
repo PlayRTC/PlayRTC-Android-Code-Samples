@@ -90,9 +90,6 @@ import android.annotation.SuppressLint;
  * <b>PlayRTC 구현</b>
  * <pre>
  * 1. PlayRTCSettings 생성
- *   v2.1.2
- *   PlayRTCActivity#onCreate {@link PlayRTCActivity#createPlayRTCSettings(int)}
- *   v2.2.0
  *   PlayRTCActivity#onCreate {@link PlayRTCActivity#createPlayRTCConfig(int)}
  * 2. PlayRTC 인스턴스를 생성
  *   PlayRTCSettings, PlayRTCObserver 구현체 전달
@@ -254,8 +251,6 @@ public class PlayRTCActivity extends Activity {
      */
     private int playrtcType = 1;
 
-    // use sdk v2.2.0
-    private boolean USE_SDK2_2_0 = true;
 
     public static final String[] MANDATORY_PERMISSIONS = {
             "android.permission.INTERNET",
@@ -293,29 +288,17 @@ public class PlayRTCActivity extends Activity {
         this.initUIControls();
 
         try {
-            // 1. MainActivity에서 선택한 Sample Type에 맞게 PlayRTCSettings 개체 생성
-            if(USE_SDK2_2_0 == false) {
-                // sdk 2.1.2
-                PlayRTCSettings settings = createPlayRTCSettings(playrtcType);
-                /*
-                 * 2. PlayRTC 인스턴스를 생성
-                 * PlayRTC 인터페이스를 구현한 객체 인스턴스를 생성하고 PlayRTC를 반환한다. static  <br>
-                 * settings PlayRTCSettings, PlayRTC 서비스 설정 정보 객체
-                 * observer PlayRTCObserver, PlayRTC Event 리스너
-                 */
-                this.playRTC = PlayRTCFactory.newInstance(settings, (PlayRTCObserver) new PlayRTCObserverImpl());
-            }
-            else {
-                // sdk 2.2.0
-                PlayRTCConfig config = createPlayRTCConfig(playrtcType);
-                /*
-                 * 2. PlayRTC 인스턴스를 생성
-                 * PlayRTC 인터페이스를 구현한 객체 인스턴스를 생성하고 PlayRTC를 반환한다. static  <br>
-                 * settings PlayRTCSettings, PlayRTC 서비스 설정 정보 객체
-                 * observer PlayRTCObserver, PlayRTC Event 리스너
-                 */
-                this.playRTC = PlayRTCFactory.createPlayRTC(config, (PlayRTCObserver) new PlayRTCObserverImpl());
-            }
+
+            // sdk 2.2.4
+            PlayRTCConfig config = createPlayRTCConfig(playrtcType);
+            /*
+             * 2. PlayRTC 인스턴스를 생성
+             * PlayRTC 인터페이스를 구현한 객체 인스턴스를 생성하고 PlayRTC를 반환한다. static  <br>
+             * settings PlayRTCSettings, PlayRTC 서비스 설정 정보 객체
+             * observer PlayRTCObserver, PlayRTC Event 리스너
+             */
+            this.playRTC = PlayRTCFactory.createPlayRTC(config, (PlayRTCObserver) new PlayRTCObserverImpl());
+
 
 
         } catch (UnsupportedPlatformVersionException e) {
@@ -352,8 +335,9 @@ public class PlayRTCActivity extends Activity {
          * @param runnable Runnable, Audio 출력 디비이스가 변경될 때 호출 받을 Runnable 객체
          * @return PlayRTCAudioManager
          */
-        if(USE_SDK2_2_0 == false) {
-            //sdk v2.2.0 에서는  PlayRTCConfig 에서 PlayRTCAudioManager를 사용하도록 설정.
+        //PlayRTCConfig 에서 PlayRTCAudioManager를 사용하도록 설정하므로 아애 코드는 사용안함..
+        if(false) {
+
             pAudioManager = PlayRTCAudioManager.create(this, new Runnable() {
                 @Override
                 public void run() {
@@ -439,8 +423,8 @@ public class PlayRTCActivity extends Activity {
 
             this.runOnUiThread(new Runnable() {
                 public void run() {
-                    // 4. 영상 스트림 출력을 위한 PlayRTCVideoView(GLSurfaceView를 상속) 동적 생성
-                    createVideoView();
+                // 4. 영상 스트림 출력을 위한 PlayRTCVideoView(GLSurfaceView를 상속) 동적 생성
+                createVideoView();
                 }
             });
         }
@@ -560,7 +544,7 @@ public class PlayRTCActivity extends Activity {
     protected void onDestroy() {
         Log.e(LOG_TAG, "onDestroy===============================");
         // The sdk 2.2.0 버전은 PlayRTCConfig 설정에서 내부 동작으로 지정.
-        // PlayRTCConfig에서 사용 설정한 경우(USE_SDK2_2_0=true) pAudioManager 는  null value
+        // PlayRTCConfig에서 사용 설정한 경우 pAudioManager 는  null value
         if (pAudioManager != null) {
             pAudioManager.close();
             pAudioManager = null;
@@ -779,6 +763,11 @@ public class PlayRTCActivity extends Activity {
         @Override
         public void onAddLocalStream(final PlayRTC obj, final PlayRTCMedia media) {
             Log.e(LOG_TAG, "onMedia onAddLocalStream==============");
+
+            // 멤버 변수 등록 이후 미디어 제어
+            // 영상, 음성 스트림 Track이 존재
+            localMedia = media;
+            
             // 영상뷰가 있는지 검사.
             if (localView == null) {
                 return;
@@ -789,7 +778,7 @@ public class PlayRTCActivity extends Activity {
 
             //PlayRTCVideoRenderer를 등록하여 화면 출력 처리
             logView.appendLog(">> onLocalStream...");
-            localMedia = media;
+
             localMedia.setVideoRenderer(localView.getVideoRenderer());
             localView.show(200);
         }
@@ -807,6 +796,11 @@ public class PlayRTCActivity extends Activity {
         @Override
         public void onAddRemoteStream(final PlayRTC obj, final String peerId, final String peerUid, final PlayRTCMedia media) {
             Log.e(LOG_TAG, "onMedia onAddRemoteStream==============");
+
+            // 멤버 변수 등록 이후 미디어 제어
+            // 영상, 음성 스트림 Track이 존재
+            remoteMedia = media;
+
             // 영상뷰가 있는지 검사.
             if (remoteView == null) {
                 return;
@@ -817,7 +811,7 @@ public class PlayRTCActivity extends Activity {
 
             // PlayRTCVideoRenderer를 등록하여 화면 출력 처리
             logView.appendLog(">> onRemoteStream[" + peerId + "]...");
-            remoteMedia = media;
+
             remoteMedia.setVideoRenderer(remoteView.getVideoRenderer());
             remoteView.show(200);
         }
@@ -887,8 +881,23 @@ public class PlayRTCActivity extends Activity {
             //Utils.showToast(PlayRTCActivity.this, peerId+"  Status["+ status+ "]...");
             logView.appendLog(">>" + peerId + "  onStatusChange[" + status + "]...");
 
+            /**
+             * 주요 이벤트
+             * PlayRTCStatus.Initialize : 라이브러리 초기화 작업 단계
+             * PlayRTCStatus.ChannelConnect : 채널 연결(connect) 단계
+             * PlayRTCStatus.LocalMedia : Local Media 생성
+             * PlayRTCStatus.Channeling : 채널 입장, Channeling
+             * PlayRTCStatus.PeerConnecting : Peer 연결 Checking 상태
+             * PlayRTCStatus.PeerSuccess : 연결 실패 없이 P2P연결 최초로 1회 발생
+             * PlayRTCStatus.PeerConnected : PeerSuccess 이벤트 이후 P2P연결 <-> P2P단절 시 P2P 재연결 이벤트
+             * PlayRTCStatus.PeerDisconnected : PeerSuccess 이벤트 이후 P2P연결 <-> P2P단절 시 P2P 단절 이벤트
+             * PlayRTCStatus.NetworkConnected : 단말기 네트워크 연결 상태 전환 이벤트, 연결감지
+             * PlayRTCStatus.NetworkDisconnected : 단말기 네트워크 연결 상태 전환 이벤트, 연결 단절 감지
+             */
             // v2.2.1
             if(status == PlayRTCStatus.PeerSuccess) {
+
+               
                 obj.startStatsReport(5000L, new PlayRTCStatsReportObserver(){
                     @Override
                     public void onStatsReport(PlayRTCStatsReport report) {
@@ -954,102 +963,31 @@ public class PlayRTCActivity extends Activity {
 
 
     /**
-     * MainActivity에서 선택한 Sample Type에 맞게 PlayRTCSettings 개체 생성
+     * MainActivity에서 선택한 Sample Type에 맞게 PlayRTCConfig 개체 생성
      * <pre>
-     * 1. new PlayRTCSettings
+     * 1. create PlayRTCConfig
      * 2. TDCProjectId/TDCLicense set
-     * 3.
-     * 4. Ring : false 연결 수립 여부를 상대방에게 묻ㅈ; 않음
-     * 5. Audio/Video/Data Enable runType타입에 따라 지정
-     * 6. setLevel
+     * 3. Ring : false 연결 수립 여부를 상대방에게 묻지 않음
+     * 4. Audio/Video/Data Enable runType 타입에 따라 지정
+     * 5. setLevel
      * </pre>
      *
      * @param runType int
-     * @return
+     * @return PlayRTCConfig
      */
-    private PlayRTCSettings createPlayRTCSettings(int runType) {
-		/* PlayRTC 서비스 설정 */
-        PlayRTCSettings settings = new PlayRTCSettings();
-        settings.android.setContext(this.getApplicationContext());
-        settings.setTDCProjectId(TDCProjectId);
-        settings.setTDCLicense(TDCLicense);
-		
-		 /* ring, 연결 수립 여부를 상대방에게 묻는지 여부를 지정, true면 상대의 수락이 있어야 연결 수립 진행  */
-        settings.channel.setRing(false);
-
-        settings.constraints.setVideoFrame(PlayRTCFrame.P640x480Frame);
-
-        // 양상 + 음성 + Data
-        if (runType == 1) {
-            settings.setAudioEnable(true);   /* 음성 전송 사용 */
-            settings.setVideoEnable(true);   /* 영상 정송 사용 */
-            settings.setDataEnable(true);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
-
-            settings.video.setFrontCameraEnable(true);
-            settings.video.setBackCameraEnable(false);
-
-        }
-        // 영상 + 음성
-        else if (runType == 2) {
-            settings.setAudioEnable(true);   /* 음성 전송 사용 */
-            settings.setVideoEnable(true);   /* 영상 정송 사용 */
-            settings.setDataEnable(false);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
-
-            settings.video.setFrontCameraEnable(true);
-            settings.video.setBackCameraEnable(false);
-
-        }
-        // 음성 only
-        else if (runType == 3) {
-            settings.setAudioEnable(true);   /* 음성 전송 사용 */
-            settings.setVideoEnable(false);   /* 영상 정송 사용 */
-            settings.setDataEnable(false);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
-
-            settings.video.setFrontCameraEnable(false);
-            settings.video.setBackCameraEnable(false);
-        }
-        // Data Only
-        else {
-            settings.setAudioEnable(false);   /* 음성 전송 사용 */
-            settings.setVideoEnable(false);   /* 영상 정송 사용 */
-            settings.setDataEnable(true);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
-        }
-
-        // 여기서 지정한 사용자 turn을 사용한다.
-        //settings.iceServers.add("turn:IP:PORT", "USERID", "PASSWD");
-
-        /**
-         * SDK Console 로그 레벨 지정
-         */
-        settings.log.console.setLevel(CONSOLE_LOG);
-		
-		/* SDK 파일 로그 레벨 지정 */
-        settings.log.file.setLevel(FILE_LOG);
-		/* 파일 로그를 남기려면 로그파일 폴더 지정 . [PATH]/yyyyMMdd.log , 10일간 보존 */
-		/* SDK 파일 로깅을 위한 로그 파일 경로, 파일 로깅을 사용하지 않는다면 Pass */
-        File logPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +
-                "/Android/data/" + this.getPackageName() + "/files/log");
-        File cachePath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +
-                "/Android/data/" + this.getPackageName() + "/files/cache");
-        settings.log.file.setLogPath(logPath.getAbsolutePath());
-
-		/* 서버 로그 전송 실패 시 재 전송 지연 시간, msec  */
-        settings.log.setCachePath(cachePath.getAbsolutePath());
-        settings.log.setRetryQueueDelays(1000);
-		/* 서버 로그 재 전송 실패시 로그 DB 저장 후 재전송 시도 지연 시간, msec */
-        settings.log.setRetryCacheDelays(10 * 1000);
-
-        return settings;
-    }
-
     private PlayRTCConfig createPlayRTCConfig(int runType) {
         /* PlayRTC 서비스 설정 */
+        // 1. create PlayRTCConfig
         PlayRTCConfig config = PlayRTCFactory.createConfig();
         config.setAndroidContext(this.getApplicationContext());
+
+        // 2. TDCProjectId/TDCLicense set
         config.setProjectId(TDCProjectId);
 
+        // 3. Ring : false 연결 수립 여부를 상대방에게 묻지 않음
         config.setRingEnable(false);
 
+        // 4. Audio/Video/Data Enable runType 타입에 따라 지정
         // 양상 + 음성 + Data
         if(runType == 1) {
             config.video.setEnable(true);
