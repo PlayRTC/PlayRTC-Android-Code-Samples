@@ -1,30 +1,28 @@
 package com.playrtc.sample.handler;
 
+import android.annotation.SuppressLint;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.playrtc.sample.PlayRTCActivity;
+import com.playrtc.sample.util.Utils;
+import com.sktelecom.playrtc.observer.PlayRTCDataObserver;
+import com.sktelecom.playrtc.observer.PlayRTCSendDataObserver;
+import com.sktelecom.playrtc.stream.PlayRTCData;
+import com.sktelecom.playrtc.stream.PlayRTCData.PlayRTCDataCode;
+import com.sktelecom.playrtc.stream.PlayRTCData.PlayRTCDataStatus;
+import com.sktelecom.playrtc.stream.PlayRTCData.PlayRTCFileReveType;
+import com.sktelecom.playrtc.stream.PlayRTCDataHeader;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-
-import com.sktelecom.playrtc.observer.PlayRTCDataObserver;
-import com.sktelecom.playrtc.observer.PlayRTCSendDataObserver;
-import com.sktelecom.playrtc.stream.PlayRTCData;
-import com.sktelecom.playrtc.stream.PlayRTCData.PlayRTCFileReveType;
-import com.sktelecom.playrtc.stream.PlayRTCDataHeader;
-import com.sktelecom.playrtc.stream.PlayRTCData.PlayRTCDataCode;
-import com.sktelecom.playrtc.stream.PlayRTCData.PlayRTCDataStatus;
-
-import com.playrtc.sample.util.Utils;
-import com.playrtc.sample.view.PlayRTCLogView;
-
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.os.Environment;
-import android.text.TextUtils;
-import android.util.Log;
-import android.widget.Toast;
-import android.os.Handler;
-import android.os.Looper;
 
 /**
  * PlayRTCData를 위한 Handler Class  <br>
@@ -47,19 +45,13 @@ import android.os.Looper;
 public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
     private static final String LOG_TAG = "DATA-HANDLER";
 
-    private Activity activity = null;
+    private PlayRTCActivity activity = null;
 
     /**
      * P2P 데이터 통신을 위한 PlayRTCData객체
      */
     private PlayRTCData dataChannel = null;
 
-    /**
-     * PlayRTC 로그를 출력하기위해 TextView를 확장한 Class
-     *
-     * @see com.playrtc.sample.view.PlayRTCLogView
-     */
-    private PlayRTCLogView refLogView = null;
 
 
     /**
@@ -73,13 +65,11 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
     /**
      * 생성자
      *
-     * @param activity Activity
-     * @param logView  PlayRTCLogView, 로그츨력 뷰
+     * @param activity PlayRTCActivity
      * @see com.playrtc.sample.view.PlayRTCLogView
      */
-    public PlayRTCDataChannelHandler(Activity activity, PlayRTCLogView logView) {
+    public PlayRTCDataChannelHandler(PlayRTCActivity activity) {
         this.activity = activity;
-        this.refLogView = logView;
     }
 
     /**
@@ -125,7 +115,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                     float per = ((float) send / (float) size) * 100.0f;
                     String sMsg = String.format("Data onSending [%d/%d] [%d/%d]  %.2f%%", index + 1, count, send, size, per);
                     Log.d(LOG_TAG, sMsg);
-                    refLogView.progressLog(sMsg);
+                    activity.progressLogMessage(sMsg);
                 }
 
                 /**
@@ -140,7 +130,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                 @Override
                 public void onSuccess(PlayRTCData obj, String peerId, String peerUid, long id, long size) {
                     Log.d(LOG_TAG, "sendText onSuccess " + peerUid + " " + id + "[" + size + "]");
-                    refLogView.appendLog(">>Data-Channel sendText onSuccess[" + id + "] " + size + " bytes");
+                    activity.appnedLogMessage(">>Data-Channel sendText onSuccess[" + id + "] " + size + " bytes");
                 }
 
                 /**
@@ -163,12 +153,12 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                 @Override
                 public void onError(PlayRTCData obj, String peerId, String peerUid, long id, PlayRTCDataCode code, String desc) {
                     Log.d(LOG_TAG, "sendText onError " + peerUid + " " + id + "[" + code + "] " + desc);
-                    refLogView.appendLog(">>Data-Channel sendText onError[" + id + "] [" + code + "] " + desc);
+                    activity.appnedLogMessage(">>Data-Channel sendText onError[" + id + "] [" + code + "] " + desc);
                 }
             });
         } else {
             Log.d(LOG_TAG, "데이터 채널이 연결 상태가 아닙니다. ");
-            refLogView.appendLog(">>Data-Channel이 연결 상태가 아닙니다.");
+            activity.appnedLogMessage(">>Data-Channel이 연결 상태가 아닙니다.");
         }
     }
 
@@ -201,7 +191,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                     float per = ((float) send / (float) size) * 100.0f;
                     String sMsg = String.format("Data onSending [%d/%d] [%d/%d]  %.2f%%", index + 1, count, send, size, per);
                     Log.d(LOG_TAG, sMsg);
-                    refLogView.progressLog(sMsg);
+                    activity.progressLogMessage(sMsg);
                 }
 
                 /**
@@ -216,7 +206,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                 @Override
                 public void onSuccess(PlayRTCData obj, String peerId, String peerUid, long id, long size) {
                     Log.d(LOG_TAG, "sendBinary onSuccess " + peerUid + " " + id + "[" + size + "]");
-                    refLogView.appendLog(">>Data-Channel sendBinary onSuccess[" + id + "] " + size + " bytes");
+                    activity.appnedLogMessage(">>Data-Channel sendBinary onSuccess[" + id + "] " + size + " bytes");
 
                 }
 
@@ -240,12 +230,12 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                 @Override
                 public void onError(PlayRTCData obj, String peerId, String peerUid, long id, PlayRTCDataCode code, String desc) {
                     Log.d(LOG_TAG, "sendBinary onError " + peerUid + " " + id + "[" + code + "] " + desc);
-                    refLogView.appendLog(">>Data-Channel sendBinary onError[" + id + "] [" + code + "] " + desc);
+                    activity.appnedLogMessage(">>Data-Channel sendBinary onError[" + id + "] [" + code + "] " + desc);
                 }
             });
         } else {
             Log.d(LOG_TAG, "데이터 채널이 연결 상태가 아닙니다. ");
-            refLogView.appendLog(">>Data-Channel이 연결 상태가 아닙니다.");
+            activity.appnedLogMessage(">>Data-Channel이 연결 상태가 아닙니다.");
         }
     }
 
@@ -264,7 +254,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
             try {
                 dataIs = this.activity.getAssets().open(fileName);
                 Log.d(LOG_TAG, "sendFile [" + fileName + "]");
-                refLogView.appendLog(">>Data-Channel sendFile[" + fileName + "]");
+                activity.appnedLogMessage(">>Data-Channel sendFile[" + fileName + "]");
                 /**
                  * byte 데이터를 전송한다.
                  * @param istream InputStream
@@ -294,7 +284,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                         float per = ((float) send / (float) size) * 100.0f;
                         String sMsg = String.format("Data onSending [%d/%d] [%d/%d]  %.2f%%", index + 1, count, send, size, per);
                         Log.d(LOG_TAG, sMsg);
-                        refLogView.progressLog(sMsg);
+                        activity.progressLogMessage(sMsg);
                     }
 
                     /**
@@ -319,7 +309,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                             }
                         });
                         Log.d(LOG_TAG, "sendFile onSuccess " + peerUid + " " + id + "[" + size + "]");
-                        refLogView.appendLog(">>Data-Channel[" + peerId + "] sendFile[" + fileName + "] onSuccess[" + id + "] " + size + " bytes");
+                        activity.appnedLogMessage(">>Data-Channel[" + peerId + "] sendFile[" + fileName + "] onSuccess[" + id + "] " + size + " bytes");
                     }
 
                     /**
@@ -342,7 +332,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                     @Override
                     public void onError(PlayRTCData obj, String peerId, String peerUid, long id, PlayRTCDataCode code, String desc) {
                         Log.d(LOG_TAG, "sendFile onError " + peerUid + " " + id + "[" + code + "] " + desc);
-                        refLogView.appendLog(">>Data-Channel sendFile[" + fileName + "] onError[" + id + "] [" + code + "] " + desc);
+                        activity.appnedLogMessage(">>Data-Channel sendFile[" + fileName + "] onError[" + id + "] [" + code + "] " + desc);
                         closeInputStream();
                     }
                 });
@@ -352,7 +342,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
             }
         } else {
             Log.d(LOG_TAG, "데이터 채널이 연결 상태가 아닙니다. ");
-            refLogView.appendLog(">>Data-Channel이 연결 상태가 아닙니다.");
+            activity.appnedLogMessage(">>Data-Channel이 연결 상태가 아닙니다.");
 
         }
     }
@@ -391,7 +381,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
         float per = ((float) recvSize / (float) total) * 100.0f;
         String sMsg = String.format("Data onProgress [%d/%d]  %.2f%%", recvSize, total, per);
         Log.d(LOG_TAG, sMsg);
-        refLogView.progressLog(sMsg);
+        activity.progressLogMessage(sMsg);
     }
 
     /**
@@ -424,19 +414,19 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
         if (header.getType() == PlayRTCDataHeader.DATA_TYPE_TEXT) {
             String recvText = new String(data);
             Log.d(LOG_TAG, "Text[" + recvText + "]");
-            refLogView.appendLog(">>Data-Channel onMessage[" + recvText + "]");
+            activity.appnedLogMessage(">>Data-Channel onMessage[" + recvText + "]");
         } else {
             String filaNmae = header.getFileName();
             if (TextUtils.isEmpty(filaNmae)) {
                 Log.d(LOG_TAG, "Binary[" + header.getSize() + "]");
-                refLogView.appendLog(">>Data-Channel onMessage Binary[" + header.getSize() + "]");
+                activity.appnedLogMessage(">>Data-Channel onMessage Binary[" + header.getSize() + "]");
             } else {
                 Log.d(LOG_TAG, "File[" + filaNmae + "]");
                 if (obj.getFileReveMode() == PlayRTCFileReveType.Byte) {
                     File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +
                             "/Android/data/" + activity.getPackageName() + "/files/" + filaNmae);
                     Log.d(LOG_TAG, "FilePath[" + f.getAbsolutePath() + "]");
-                    refLogView.appendLog(">>Data-Channel onMessage File[" + f.getAbsolutePath() + "]");
+                    activity.appnedLogMessage(">>Data-Channel onMessage File[" + f.getAbsolutePath() + "]");
                     try {
                         if (!f.exists()) {
                             f.createNewFile();
@@ -450,7 +440,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
                 } else {
                     String recvFile = new String(data);
                     Log.d(LOG_TAG, "FilePath[" + recvFile + "]");
-                    refLogView.appendLog(">>Data-Channel onMessage File[" + recvFile + "]");
+                    activity.appnedLogMessage(">>Data-Channel onMessage File[" + recvFile + "]");
                 }
             }
         }
@@ -476,7 +466,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
     @Override
     public void onError(final PlayRTCData obj, final String peerId, final String peerUid, final long id, final PlayRTCDataCode code, final String desc) {
         Utils.showToast(activity, "Data-Channel[" + peerId + "] onError[" + code + "] " + desc);
-        refLogView.appendLog(">>Data-Channel onError[" + code + "] " + desc);
+        activity.appnedLogMessage(">>Data-Channel onError[" + code + "] " + desc);
     }
 
     /**
@@ -497,7 +487,7 @@ public class PlayRTCDataChannelHandler implements PlayRTCDataObserver {
     @Override
     public void onStateChange(final PlayRTCData obj, final String peerId, final String peerUid, final PlayRTCDataStatus state) {
         Utils.showToast(activity, "Data-Channel[" + peerId + "] " + state + "...");
-        refLogView.appendLog(">>Data-Channel " + state + "...");
+        activity.appnedLogMessage(">>Data-Channel " + state + "...");
     }
 
     private void closeInputStream() {

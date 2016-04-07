@@ -1,4 +1,4 @@
-package com.playrtc.sample.util;
+package com.playrtc.sample.data;
 
 /**
  * 채널 정보를 담는 데이터 Class <br>

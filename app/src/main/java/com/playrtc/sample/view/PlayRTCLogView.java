@@ -1,7 +1,5 @@
 package com.playrtc.sample.view;
 
-import com.playrtc.sample.R;
-
 import android.content.Context;
 import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
@@ -10,6 +8,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+
+import com.playrtc.sample.R;
 
 /**
  * PlayRTC 로그를 출력하기위해 TextView를 확장한 Class<br>
@@ -120,30 +120,31 @@ public class PlayRTCLogView extends TextView{
 		this.post(new Runnable(){
 		   public void run()
 		   {
-			   PlayRTCLogView.this.setText("");
+			   setText("");
 		   }
 	   });
 	}
 	/**
 	 * 로그창 하단에 로그 문자열울 추가하고 스크롤를 하단으로 이동한다.
-	 * @param msg String, 로그 출력 메세지 
+	 * @param message String, 로그 출력 메세지
 	 */
-	public void appendLog(final String msg) {
-		
-		if(hasPrevText == true) {
-			hasPrevText = false;
-			prevText = null;
-		}
+	public void appnedLogMessage(final String message) {
+
+
 	   this.post(new Runnable(){
 		   public void run()
 		   {
-			   PlayRTCLogView.this.append(msg+"\n");
+			   if(hasPrevText == true) {
+				   hasPrevText = false;
+				   prevText = null;
+			   }
+			   append(message + "\n");
 			   final Layout layout = PlayRTCLogView.this.getLayout();
 		        if(layout != null){
-		            int scrollDelta = layout.getLineBottom(PlayRTCLogView.this.getLineCount() - 1) 
-		                - PlayRTCLogView.this.getScrollY() - PlayRTCLogView.this.getHeight();
-		            if(scrollDelta > 0)
-		            	PlayRTCLogView.this.scrollBy(0, scrollDelta);
+					int scrollDelta = layout.getLineBottom(getLineCount() - 1) - getScrollY() - getHeight();
+		            if(scrollDelta > 0) {
+						scrollBy(0, scrollDelta);
+					}
 		        }
 		   }
 	   });
@@ -152,24 +153,25 @@ public class PlayRTCLogView extends TextView{
 	/**
 	 * 로그창 하단의 마지막 라인을 갱신하고 스크롤를 하단으로 이동한다.<br>
 	 * 데이터 채널 데이터 전송/수신 등의 진척도를 표시하기 위해 사용 
-	 * @param msg String, 로그 출력 메세지 
+	 * @param message String, 로그 출력 메세지
 	 */
-	public void progressLog(final String msg) {
-		if(hasPrevText == false) {
-			hasPrevText = true;
-			prevText = PlayRTCLogView.this.getText().toString();
-		}
+	public void progressLogMessage(final String message) {
+
 		this.post(new Runnable(){
 		   public void run()
 		   {
-			   PlayRTCLogView.this.setText(prevText + msg+"\n");
+			   if(hasPrevText == false) {
+				   hasPrevText = true;
+				   prevText = getText().toString();
+			   }
+			   setText(prevText + message+"\n");
 			   
-			   final Layout layout = PlayRTCLogView.this.getLayout();
+			   final Layout layout = getLayout();
 		        if(layout != null){
-		            int scrollDelta = layout.getLineBottom(PlayRTCLogView.this.getLineCount() - 1) 
-		                - PlayRTCLogView.this.getScrollY() - PlayRTCLogView.this.getHeight();
-		            if(scrollDelta > 0)
-		            	PlayRTCLogView.this.scrollBy(0, scrollDelta);
+		            int scrollDelta = layout.getLineBottom(getLineCount() - 1) - getScrollY() - getHeight();
+		            if(scrollDelta > 0) {
+						scrollBy(0, scrollDelta);
+					}
 		        }
 		   }
 		});

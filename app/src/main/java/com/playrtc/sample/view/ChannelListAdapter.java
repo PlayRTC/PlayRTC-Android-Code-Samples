@@ -1,10 +1,11 @@
-package com.playrtc.sample.util;
+package com.playrtc.sample.view;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.playrtc.sample.R;
+import com.playrtc.sample.data.ChannelData;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,7 +31,7 @@ import android.widget.Button;
  * </pre>
  *
  * @see android.widget.BaseAdapter
- * @see com.playrtc.sample.util.ChannelData
+ * @see ChannelData
  */
 public class ChannelListAdapter extends BaseAdapter {
     private Activity activity = null;
@@ -54,7 +55,7 @@ public class ChannelListAdapter extends BaseAdapter {
          * 리스트의 채널 입장 버튼 틀릭 시 채널 데이터를 전달
          *
          * @param data ChannelData
-         * @see com.playrtc.sample.util.ChannelData
+         * @see ChannelData
          */
         public abstract void onSelectListItem(ChannelData data);
     }
@@ -64,7 +65,7 @@ public class ChannelListAdapter extends BaseAdapter {
      *
      * @param activity Activity
      * @param l        IChannelListAdapter, 리스트의 채널 입장 버튼 틀릭 시 채널 데이터를 전달하기 위한 Interface 구현 개체
-     * @see com.playrtc.sample.util.ChannelListAdapter.IChannelListAdapter
+     * @see ChannelListAdapter.IChannelListAdapter
      */
     public ChannelListAdapter(Activity activity, IChannelListAdapter l) {
         this.activity = activity;
@@ -76,7 +77,7 @@ public class ChannelListAdapter extends BaseAdapter {
      * 채널 목록 리스트를 지정한다.
      *
      * @param list List&lt;ChannelData&gt;
-     * @see com.playrtc.sample.util.ChannelData
+     * @see ChannelData
      */
     public void setListItems(List<ChannelData> list) {
         Log.e("LIST_VIEW", "setListItems list");
@@ -103,7 +104,7 @@ public class ChannelListAdapter extends BaseAdapter {
      * BaseAdapter 인터페이스
      *
      * @return Object, ChannelData
-     * @see com.playrtc.sample.util.ChannelData
+     * @see ChannelData
      */
     @Override
     public Object getItem(int location) {

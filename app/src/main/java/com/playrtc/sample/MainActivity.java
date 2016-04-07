@@ -1,5 +1,8 @@
 package com.playrtc.sample;
 
+import android.annotation.TargetApi;
+import android.content.pm.PackageManager;
+import android.util.Log;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,16 +12,43 @@ import android.view.View;
 import android.widget.Button;
 
 /**
- * PlayRTC Sample을 구동하기 위한 Main Menu Activity
- * BaseActivity 상속 하여 구현
+ * PlayRTC Sample App Main Activity Class <BR>
+ * <b> Sample 구현 </b>
+ * <pre>
+ * 1. 영상, 음성, p2p data
+ * 2. 영상, 음성
+ * 3. 음성, data
+ * 4. p2p data only
+ * </pre>
  */
 public class MainActivity extends Activity {
+
+    private static final String LOG_TAG = "MainActivity";
+
     private static final int LAUNCHED_PLAYRTC = 100;
     /**
      * isCloesActivity가 false이면 Dialog를 통해 사용자의 종료 의사를 확인하고<br>
      * Activity를 종료 처리.
      */
     private boolean isCloesActivity = false;
+
+    private final int MY_PERMISSION_REQUEST_STORAGE = 100;
+    /**
+     * Application permission 목록, android build target 23
+     */
+    public static final String[] MANDATORY_PERMISSIONS = {
+            "android.permission.INTERNET",
+            "android.permission.CAMERA",
+            "android.permission.RECORD_AUDIO",
+            "android.permission.MODIFY_AUDIO_SETTINGS",
+            "android.permission.ACCESS_NETWORK_STATE",
+            "android.permission.CHANGE_WIFI_STATE",
+            "android.permission.ACCESS_WIFI_STATE",
+            "android.permission.READ_PHONE_STATE",
+            "android.permission.BLUETOOTH",
+            "android.permission.BLUETOOTH_ADMIN",
+            "android.permission.WRITE_EXTERNAL_STORAGE"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +57,12 @@ public class MainActivity extends Activity {
 
         // 버튼 이벤트 등록
         initUIControls();
+
+        // Application permission 23
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+
+            checkPermission(MANDATORY_PERMISSIONS);
+        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -89,38 +125,73 @@ public class MainActivity extends Activity {
         this.findViewById(R.id.btn_go_sample1).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goPlayRTC(1);
+                excutePlayRTCSample(1);
             }
         });
         // 영상 + 음성 Sample
         this.findViewById(R.id.btn_go_sample2).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goPlayRTC(2);
+                excutePlayRTCSample(2);
             }
         });
         // 음성 only Sample
         this.findViewById(R.id.btn_go_sample3).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goPlayRTC(3);
+                excutePlayRTCSample(3);
             }
         });
         //  Data  only Sample
         this.findViewById(R.id.btn_go_sample4).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goPlayRTC(4);
+                excutePlayRTCSample(4);
             }
         });
+    }
+
+    @TargetApi(23)
+    private void checkPermission(String[] permissions) {
+
+        requestPermissions(permissions, MY_PERMISSION_REQUEST_STORAGE);
+    }
+
+    /**
+     * Application permission, android build target 23
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSION_REQUEST_STORAGE:
+                int cnt = permissions.length;
+                for(int i = 0; i < cnt; i++ ) {
+
+                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED ) {
+
+                        Log.i(LOG_TAG, "Permission[" + permissions[i] + "] = PERMISSION_GRANTED");
+
+                    } else {
+
+                        Log.i(LOG_TAG, "permission[" + permissions[i] + "] always deny");
+                    }
+                }
+                break;
+        }
     }
 
     /**
      * PlayRTCActivity 이동
      *
      * @param type
+     * <pre>
+     * 1. 영상, 음성, p2p data
+     * 2. 영상, 음성
+     * 3. 음성, data
+     * 4. p2p data only
+     * </pre>
      */
-    private void goPlayRTC(int type) {
+    private void excutePlayRTCSample(int type) {
         Intent intent = new Intent(MainActivity.this, PlayRTCActivity.class);
         // PlayRTC Sample 유형 전달
         intent.putExtra("type", type);

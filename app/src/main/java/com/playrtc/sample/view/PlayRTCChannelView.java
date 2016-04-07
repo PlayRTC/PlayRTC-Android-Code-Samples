@@ -11,10 +11,9 @@ import com.sktelecom.playrtc.PlayRTC;
 import com.sktelecom.playrtc.connector.servicehelper.PlayRTCServiceHelperListener;
 import com.playrtc.sample.R;
 import com.playrtc.sample.PlayRTCActivity;
-import com.playrtc.sample.util.ChannelData;
-import com.playrtc.sample.util.ChannelListAdapter;
+import com.playrtc.sample.data.ChannelData;
 import com.playrtc.sample.util.Utils;
-import com.playrtc.sample.util.ChannelListAdapter.IChannelListAdapter;
+import com.playrtc.sample.view.ChannelListAdapter.IChannelListAdapter;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -45,7 +44,7 @@ import android.widget.TextView;
  * </pre>
  *
  * @see com.sktelecom.playrtc.connector.servicehelper.PlayRTCServiceHelperListener
- * @see com.playrtc.sample.util.ChannelListAdapter.IChannelListAdapter
+ * @see ChannelListAdapter.IChannelListAdapter
  */
 public class PlayRTCChannelView extends RelativeLayout implements IChannelListAdapter {
     private static final String LOG_TAG = "CHANNEL_INFO";
@@ -206,7 +205,7 @@ public class PlayRTCChannelView extends RelativeLayout implements IChannelListAd
      * @param l        PlayRTCChannelViewListener,  채널 생성/입장 버튼 선택 시 선택 정보를 전달하기 위한 PlayRTCChannelViewListener Interface 구현 개체.
      * @see com.playrtc.sample.PlayRTCActivity
      * @see com.playrtc.sample.view.PlayRTCChannelView.PlayRTCChannelViewListener
-     * @see com.playrtc.sample.util.ChannelListAdapter
+     * @see ChannelListAdapter
      */
     public void init(PlayRTCActivity activity, PlayRTC playRTC, PlayRTCChannelViewListener l) {
         this.playRTC = playRTC;
@@ -220,7 +219,7 @@ public class PlayRTCChannelView extends RelativeLayout implements IChannelListAd
      * 채널 목록 리스트의 채널 입장 버튼을 눌렀을 때 해당 채널 정보를 전달 받기 위한 IChannelListAdapter 구현
      *
      * @param data ChannelData, 채널 정보
-     * @see com.playrtc.sample.util.ChannelData
+     * @see ChannelData
      */
     @Override
     public void onSelectListItem(ChannelData data) {
