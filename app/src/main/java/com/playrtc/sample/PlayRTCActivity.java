@@ -117,8 +117,7 @@ public class PlayRTCActivity extends Activity {
      * 4 : Data Sample<br>
      */
     private int playrtcType = 1;
-
-
+    
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rtc);
