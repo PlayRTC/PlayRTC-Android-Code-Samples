@@ -55,6 +55,22 @@
 		        android:layout_centerHorizontal="true"
 		        android:layout_centerVertical="true"
 				android:background="#e0e0e0">
+				<!-- v2.2.6 xml 지원 -->
+				<com.playrtc.sample.view.RemoteVideoView
+					android:id="@+id/remote_video"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_centerHorizontal="true"
+					android:layout_centerVertical="true"
+					android:visibility="visible"/>
+
+				<com.playrtc.sample.view.LocalVideoView
+					android:id="@+id/local_video"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_centerHorizontal="true"
+					android:layout_centerVertical="true"/>
+
 			</com.playrtc.sample.view.PlayRTCVideoViewGroup>
 
 			<com.playrtc.sample.view.PlayRTCLogView
@@ -122,6 +138,19 @@
 					android:text="AUDIO-OFF" />
 			   
 			</LinearLayout>
+
+			<!-- 영상 뷰 Snapshot 이미지 요청 및 이미지 출력을 위한 뷰 그룹  -->
+			<com.playrtc.sample.view.PlayRTCSnapshotView
+				android:id="@+id/snapshot_area"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_centerHorizontal="true"
+				android:layout_centerVertical="true"
+				android:orientation="vertical"
+				android:visibility="invisible"
+				android:background="#55ffffff">
+			</com.playrtc.sample.view.PlayRTCSnapshotView>
+
 		</RelativeLayout>
 		
 		<RelativeLayout 
@@ -188,7 +217,15 @@
 				android:layout_toLeftOf="@id/btn_chClose"
 				android:textSize="14sp"
 				android:text="채널퇴장" />
-	
+
+			<Button
+				android:id="@+id/btn_show_snapshot"
+				android:layout_width="90dp"
+				android:layout_height="wrap_content"
+				android:textSize="13sp"
+				android:layout_centerVertical="true"
+				android:layout_toLeftOf="@id/btn_peerChClose"
+				android:text="Snapshot" />
 		</RelativeLayout>
 	</LinearLayout>
 	<!-- Channel Popup Layer-->

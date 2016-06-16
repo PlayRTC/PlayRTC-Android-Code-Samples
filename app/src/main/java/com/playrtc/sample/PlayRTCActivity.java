@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,18 +21,18 @@ import com.playrtc.sample.handler.PlayRTCChannelViewListener;
 import com.playrtc.sample.view.PlayRTCChannelView;
 import com.playrtc.sample.view.PlayRTCLogView;
 import com.playrtc.sample.view.PlayRTCVideoViewGroup;
-
-
+import com.playrtc.sample.view.PlayRTCSnapshotView;
+import com.playrtc.sample.view.PlayRTCSnapshotView.SnapshotLayerObserver;
 
 import com.sktelecom.playrtc.exception.RequiredParameterMissingException;
 import com.sktelecom.playrtc.exception.UnsupportedPlatformVersionException;
 import com.sktelecom.playrtc.util.ui.PlayRTCVideoView;
+import com.sktelecom.playrtc.util.ui.PlayRTCVideoView.SnapshotObserver;
 
-/**
- * PlayRTC를 구현한 Activity Class <br>
- * <br>
- * <b>주요 멤버 </b>
- * <pre>
+/*
+ * PlayRTC를 구현한 Activity Class
+ *
+ * 주요 멤버
  * - PlayRTCHandler playrtcHandler
  *     PlayRTC 인스턴스 및 관련 기능을 제공
  *     PlayRTCObserver Listener Interface 구현
@@ -50,32 +51,31 @@ import com.sktelecom.playrtc.util.ui.PlayRTCVideoView;
  *
  * - PlayRTCLogView logView
  *     PlayRTC 로그를 출력하기위해 TextView를 확장한 Class
- * </pre>
- * <p/>
  */
 public class PlayRTCActivity extends Activity {
     private static final String LOG_TAG = "PlayRTCActivity";
 
-    /**
-     * 채널 팝업 뷰<br>
+    /*
+     * 채널 팝업 뷰
      * 채널 서비스에 채널을 생성하거나 입장할 채널을 선택하는 UI
      *
      * @see com.playrtc.sample.view.PlayRTCChannelView
      */
     private PlayRTCChannelView channelInfoView = null;
 
-    /**
-     * PlayRTC-Handler Class <br>
+
+    /*
+     * PlayRTC-Handler Class
      * PlayRTC 메소드 , PlayRTC객체의 이벤트 처리
      */
     private PlayRTCHandler playrtcHandler = null;
 
-    /**
+    /*
      * PlayRTCVideoView를 위한 부모 뷰 그룹
      */
     private PlayRTCVideoViewGroup videoLayer = null;
 
-    /**
+    /*
      * PlayRTCData를 위한 Handler Class
      *
      * @see com.playrtc.sample.handler.PlayRTCDataChannelHandler
@@ -83,38 +83,42 @@ public class PlayRTCActivity extends Activity {
     private PlayRTCDataChannelHandler dataHandler = null;
 
 
-    /**
+    /*
      * 로그 출력 TextView
      *
      * @see com.playrtc.sample.view.PlayRTCLogView
      */
     private PlayRTCLogView logView = null;
 
-    /**
+    /*
      * PlayRTC P2P Status report 출력 TextView
      */
     private TextView txtStatReport	= null;
 
 
+    /*
+     * 영상 뷰 Snapshot 이미지 요청 및 이미지 출력을 위한 뷰 그룹
+     */
+    private PlayRTCSnapshotView snapshotLayer = null;
 
-    /**
+    /*
      * isCloesActivity가 false이면 Dialog를 통해 사용자의 종료 의사를 확인하고<br>
      * Activity를 종료 처리. 만약 채널에 입장한 상태이면 먼저 채널을 종료한다.
      */
     private boolean isCloesActivity = false;
 
-    /**
+    /*
      * 영상 뷰를 사용하지 않는 경우 로그 뷰를 화면 중앙에 1회 위치 시키기 위한 변수
      * onWindowFocusChanged에서 로그뷰 Layout을 조정 하므로 필요함.
      */
     private boolean isResetLogViewArea = false;
 
-    /**
-     * PlayRTC Sample Type<br>
-     * 1 : 영상 + 음성 + Data Sample<br>
-     * 2 : 영상 + 음성 Sample<br>
-     * 3 : 음성 Sample<br>
-     * 4 : Data Sample<br>
+    /*
+     * PlayRTC Sample Type
+     * - 1 : 영상 + 음성 + Data Sample<br>
+     * - 2 : 영상 + 음성 Sample<br>
+     * - 3 : 음성 Sample<br>
+     * - 4 : Data Sample<br>
      */
     private int playrtcType = 1;
     
@@ -129,19 +133,21 @@ public class PlayRTCActivity extends Activity {
 
         Intent intent = getIntent();
 
-        /**
+        /*
          * PlayRTC Sample Type
-         * <pre>
-         * 1. 영상, 음성, p2p data
-         * 2. 영상, 음성
-         * 3. 음성, data
-         * 4. p2p data only
-         * </pre>
+         * - 1. 영상, 음성, p2p data
+         * - 2. 영상, 음성
+         * - 3. 음성, data
+         * - 4. p2p data only
          */
         playrtcType = intent.getIntExtra("type", 1);
 
         // UI 인스턴스 변수 처리
         initUIControls();
+
+        if(playrtcType < 3) {
+            initSnapshotControlls();
+        }
 
         playrtcHandler = new PlayRTCHandler(this);
         try {
@@ -178,22 +184,25 @@ public class PlayRTCActivity extends Activity {
         super.onWindowFocusChanged(hasFocus);
         if (playrtcType == 3 || playrtcType == 4) {
             if(hasFocus && isResetLogViewArea == false) {
-                this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        resetLogViewArea();
-                    }
-                });
+                resetLogViewArea();
             }
             return;
         }
+        /*
+        // Layout XML을 사용하지 않고 소스 코드에서 직접 샹성하는 경우
         if (hasFocus && videoLayer.isCreatedVideoView() == false) {
 
-            this.runOnUiThread(new Runnable() {
-                public void run() {
-                    // 4. 영상 스트림 출력을 위한 PlayRTCVideoView 동적 생성
-                    videoLayer.createVideoView();
-                }
-            });
+            // 4. 영상 스트림 출력을 위한 PlayRTCVideoView 동적 생성
+            videoLayer.createVideoView();
+
+        }
+        */
+        // Layout XML에 VideoView를 기술한 경우. v2.2.6
+        if (hasFocus && videoLayer.isInitVideoView() == false) {
+
+            // 4. 영상 스트림 출력을 위한 PlayRTCVideoView 초기화
+            videoLayer.initVideoView();
+
         }
     }
 
@@ -202,8 +211,6 @@ public class PlayRTCActivity extends Activity {
         super.onPause();
         // 미디어 스트리밍 처리 pause
         if(playrtcHandler != null)playrtcHandler.onActivityPause();
-        // 화면 출력 pause
-        if (videoLayer != null) videoLayer.onActivityPause();
     }
 
     @Override
@@ -212,8 +219,6 @@ public class PlayRTCActivity extends Activity {
 
         // 미디어 스트리밍 처리 resume
         if (playrtcHandler != null) playrtcHandler.onActivityResume();
-        // 화면 출력 resume
-        if (videoLayer != null) videoLayer.onActivityResume();
     }
 
     @Override
@@ -225,11 +230,15 @@ public class PlayRTCActivity extends Activity {
             playrtcHandler.close();
             playrtcHandler = null;
         }
+        // v2.2.6
+        if(videoLayer != null) {
+            videoLayer.releaseView();
+        }
         this.finish();
         super.onDestroy();
     }
 
-    /**
+    /*
      * isCloesActivity가 false이면 Dialog를 통해 사용자의 종료 의사를 확인하고<br>
      * Activity를 종료 처리. 만약 채널에 입장한 상태이면 먼저 채널을 종료한다.
      */
@@ -284,26 +293,17 @@ public class PlayRTCActivity extends Activity {
         }
     }
 
-    /**
-     * 가로/세로 회전시 처리를 위한 Sample 코드
-     * Sample에서는 가로모드 고정 이므로 사용 안됨.
-     */
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
 
         switch (this.getResources().getConfiguration().orientation) {
             case Configuration.ORIENTATION_PORTRAIT: {
-                //Point displaySize = new Point();
-                //displaySize.x = 가로크기;
-                //displaySize.y = 세로크기;
-                //localView.updateDisplaySize(displaySize);
+
             }
             break;
             case Configuration.ORIENTATION_LANDSCAPE: {
-                //Point displaySize = new Point();
-                //displaySize.x = 가로크기;
-                //displaySize.y = 세로크기;
-                //localView.updateDisplaySize(displaySize);
+
             }
             break;
 
@@ -313,7 +313,7 @@ public class PlayRTCActivity extends Activity {
         super.onConfigurationChanged(newConfig);
     }
 
-    /**
+    /*
      * PlayRTCHandler 인스턴스를 반환한다.
      * @return PlayRTCHandler
      */
@@ -321,7 +321,10 @@ public class PlayRTCActivity extends Activity {
         return playrtcHandler;
     }
 
-    /**
+    public PlayRTCVideoViewGroup getVideoLayer() {
+        return videoLayer;
+    }
+    /*
      * 로컬 영상 PlayRTCVideoView 인스턴스를 반환한다.
      * @return PlayRTCVideoView
      */
@@ -329,7 +332,7 @@ public class PlayRTCActivity extends Activity {
         return videoLayer.getLocalView();
     }
 
-    /**
+    /*
      * 상대방 영상 PlayRTCVideoView 인스턴스를 반환한다.
      * @return PlayRTCVideoView
      */
@@ -337,8 +340,8 @@ public class PlayRTCActivity extends Activity {
         return videoLayer.getRemoteView();
     }
 
-    /**
-     * PlayRTCActivity를 종료한다. <br>
+    /*
+     * PlayRTCActivity를 종료한다.
      * PlayRTCHandler에서 채널이 종료 할 때 호출한다.
      * @param isClose boolean, 종료 처리 시 사용자의 종료 으의사를 묻는 여부
      */
@@ -350,7 +353,7 @@ public class PlayRTCActivity extends Activity {
         this.onBackPressed();
     }
 
-    /**
+    /*
      * PlayRTCDataChannelHandler 인스턴스를 반환한다.
      * @return PlayRTCDataChannelHandler
      */
@@ -358,7 +361,7 @@ public class PlayRTCActivity extends Activity {
         return dataHandler;
     }
 
-    /**
+    /*
      * PlayRTCChannelView 인스턴스를 반환한다.
      * @return PlayRTCChannelView
      */
@@ -366,8 +369,8 @@ public class PlayRTCActivity extends Activity {
         return channelInfoView;
     }
 
-    /**
-     * PlayRTCLogView의 최 하단에 로그 문자열을 추가 한다.
+    /*
+     * PlayRTCLogView의  하단에 로그 문자열을 추가 한다.
      * @param message String
      */
     public void appnedLogMessage(String message) {
@@ -376,7 +379,7 @@ public class PlayRTCActivity extends Activity {
         }
     }
 
-    /**
+    /*
      * PlayRTCLogView의 최 하단에 로그 문자열을 추가 한다. <br>
      * 주로 진행 상태 메세지를 표시 하기 위해 최 하단의 진행 상태 메세지만 갱신한다.
      * @param message String
@@ -387,7 +390,7 @@ public class PlayRTCActivity extends Activity {
         }
     }
 
-    /**
+    /*
      * PlayRTC P2P 상태 문자열을 출력한다.
      * @param resport
      */
@@ -400,7 +403,7 @@ public class PlayRTCActivity extends Activity {
         });
     }
 
-    /**
+    /*
      * Layout 관련 인스턴스 설정 및 이벤트 정의
      */
     private void initUIControls() {
@@ -411,8 +414,13 @@ public class PlayRTCActivity extends Activity {
 		/*video 스트림 출력을 위한 PlayRTCVideoView의 부모 ViewGroup */
         videoLayer = (PlayRTCVideoViewGroup) findViewById(R.id.videoarea);
 
+        /*video 스트림 출력을 위한 PlayRTCVideoView의 부모 ViewGroup */
+        videoLayer = (PlayRTCVideoViewGroup) findViewById(R.id.videoarea);
+
 		/* 로그 출력 TextView */
         logView = (PlayRTCLogView) this.findViewById(R.id.logtext);
+
+        snapshotLayer = (PlayRTCSnapshotView)this.findViewById(R.id.snapshot_area);
 
         /* PlayRTC P2P Status report 출력 TextView */
         txtStatReport = (TextView)this.findViewById(R.id.txt_stat_report);
@@ -595,8 +603,82 @@ public class PlayRTCActivity extends Activity {
                 }
             }
         });
+
+         /* snapshot 레이어 보기 버튼 */
+        Button btnShowSnapshot = (Button)this.findViewById(R.id.btn_show_snapshot);
+        if (playrtcType == 1 || playrtcType == 2) {
+
+
+            btnShowSnapshot.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(snapshotLayer.isShown() == false){
+
+                        snapshotLayer.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
     }
 
+    private void initSnapshotControlls() {
+        if(snapshotLayer != null && videoLayer != null) {
+
+            // Snapshot 버튼과 이미지 배치등의 자식 요소를 동적으로 생성하여 Layout 구성
+            snapshotLayer.createControls(new SnapshotLayerObserver(){
+
+                @Override
+                public void onClickSnapshotImage(boolean local) {
+                    if(local && videoLayer.getLocalView() != null) {
+
+                        /*
+                         * Snapshot 이미지 요청
+                         */
+                        videoLayer.getLocalView().snapshot(new SnapshotObserver(){
+
+                            @Override
+                            public void onViewSnapshot(Bitmap image) {
+                                int w = image.getWidth();
+                                int h = image.getHeight();
+                                Log.e("SNAP-SHOT", "snapshot Bitmap["+w+"x"+h+"].....");
+
+                                /*
+                                 * Snapshot 이미지 출력
+                                 */
+                                snapshotLayer.setSnapshotImage(image);
+
+                            }
+
+                        });
+                    }
+                    else if(local == false && videoLayer.getRemoteView() != null) {
+
+                        /*
+                         * Snapshot 이미지 요청
+                         */
+                        videoLayer.getRemoteView().snapshot(new SnapshotObserver(){
+
+                            @Override
+                            public void onViewSnapshot(Bitmap image) {
+                                int w = image.getWidth();
+                                int h = image.getHeight();
+                                Log.e("SNAP-SHOT", "snapshot Bitmap["+w+"x"+h+"].....");
+
+                                /*
+                                 * Snapshot 이미지 출력
+                                 */
+                                snapshotLayer.setSnapshotImage(image);
+
+                            }
+
+                        });
+                    }
+
+                }
+
+            });
+        }
+    }
     private void resetLogViewArea() {
         if(isResetLogViewArea == true) {
             return;

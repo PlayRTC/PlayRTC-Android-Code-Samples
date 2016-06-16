@@ -29,8 +29,9 @@ public class PlayRTCChannelViewListener implements PlayRTCChannelView.PlayRTCCha
     public PlayRTCChannelViewListener(PlayRTCActivity activity) {
         this.activity = activity;
     }
-    /**
-     * 채널 생성 버튼을 늘렀을 때 <br>
+
+    /*
+     * 채널 생성 버튼을 늘렀을 때
      *
      * @param channelName String, 채널 이름
      * @param userId      String, 사용자 Application 사용자 아이디
@@ -80,8 +81,8 @@ public class PlayRTCChannelViewListener implements PlayRTCChannelView.PlayRTCCha
         }
     }
 
-    /**
-     * 채널 입장 버튼을 눌렀을 때 <br>
+    /*
+     * 채널 입장 버튼을 눌렀을 때
      *
      * @param channelId String, 입장할 채널의 아이디
      * @param userId    String, 사용자 Application 사용자 아이디

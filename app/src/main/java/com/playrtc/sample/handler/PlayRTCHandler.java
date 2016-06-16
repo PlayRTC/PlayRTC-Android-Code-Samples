@@ -7,12 +7,14 @@ import android.util.Log;
 
 import com.playrtc.sample.PlayRTCActivity;
 import com.playrtc.sample.util.Utils;
+import com.playrtc.sample.view.PlayRTCVideoViewGroup;
 import com.sktelecom.playrtc.PlayRTC;
 import com.sktelecom.playrtc.PlayRTC.PlayRTCCode;
 import com.sktelecom.playrtc.PlayRTC.PlayRTCStatus;
 import com.sktelecom.playrtc.PlayRTCFactory;
 import com.sktelecom.playrtc.config.PlayRTCConfig;
-import com.sktelecom.playrtc.config.PlayRTCSettings;
+import com.sktelecom.playrtc.config.PlayRTCVideoConfig.VideoCodec;
+import com.sktelecom.playrtc.config.PlayRTCAudioConfig.AudioCodec;
 import com.sktelecom.playrtc.config.PlayRTCVideoConfig;
 import com.sktelecom.playrtc.exception.RequiredConfigMissingException;
 import com.sktelecom.playrtc.exception.RequiredParameterMissingException;
@@ -39,10 +41,14 @@ import java.io.File;
  *   PlayRTCConfig, PlayRTCObserver 구현체 전달
  *   PlayRTCFactory#newInstance(PlayRTCConfig config, PlayRTCObserver observer)
  *
- * 3. 영상 출력을 위한 PlayRTCVideoView 생성
- *   PlayRTCActivity#onWindowFocusChanged 에서 생성
- *     PlayRTCVideoView 동적 생성 시 화면 사이즈 계산을 위해 화면 사이즈를 획득할 수 있는 onWindowFocusChanged에서 구현
+ * 3. 영상 출력을 위한 PlayRTCVideoView  초기화
+ *   - xml layout을 사용하지 않는경우 소스 코드에서 직접 생성
+ *     PlayRTCVideoView 화면 사이즈 계산을 위해 화면 사이즈를 획득할 수 있는 PlayRTCActivity#onWindowFocusChanged 에서 생성
  *     PlayRTCVideoViewGroup#createVideoView()
+ *   - xml layout을 사용하는 경우
+ *     PlayRTCVideoView 화면 사이즈 계산을 위해 화면 사이즈를 획득할 수 있는 PlayRTCActivity#onWindowFocusChanged 에서 생성
+ *     PlayRTCVideoViewGroup#initVideoView()
+ *
  *
  * 4. 채널 서비스에 채널 생성/입장 요청 -> PlayRTCChannelView 팝업에서 채널 생성 또는 입장 버튼 리스너 PlayRTCChannelViewListener 구현
  *   PlayRTCChannelViewListener#onClickCreateChannel
@@ -141,17 +147,18 @@ public class PlayRTCHandler extends PlayRTCObserver {
 
     private static final String LOG_TAG = "PLAYRTC";
 
-    /**
+    /*
      * PlayRTC SDK 콘솔 Log 레벨 정의. WARN
      */
     private static final int CONSOLE_LOG = PlayRTCConfig.DEBUG;
-    /**
+
+    /*
      * PlayRTC SDK 파일 Log 레벨 정의. WARN
      */
     private static final int FILE_LOG = PlayRTCConfig.WARN;
 
-    /**
-     * PlayRTC 서비스에 생성한 프로젝트의 고유 아이디. <br>
+    /*
+     * PlayRTC 서비스에 생성한 프로젝트의 고유 아이디.
      * Sample 테스트용으로 생성한 프로젝트 아이디를 사용. 실제 앱 서비스 개발 시 프로젝트 아이디를 사용해야 함.
      */
     private static final String TDCProjectId = "60ba608a-e228-4530-8711-fa38004719c1"; // playrtc
@@ -162,45 +169,43 @@ public class PlayRTCHandler extends PlayRTCObserver {
      */
     private PlayRTCActivity activity = null;
 
-    /**
+    /*
      * PlayRTC 인스턴스
      */
     private PlayRTC playrtc = null;
-    /**
+    /*
      *  로컬 PlayRTCMedia 전역 변수
      */
     private PlayRTCMedia localMedia = null;
-    /**
+    /*
      *  상대방 PlayRTCMedia 전역 변수
      */
     private PlayRTCMedia remoteMedia = null;
 
-    /**
+    /*
      * P2P연결 수립 후 PlayRTC의 P2P 상태 정보를 제공하기 위한 Report 객체
      */
     private PlayRTCStatsReportHandler statReportHandler = null;
 
-    /**
+    /*
      * 채널 서비스에 생성된 P2P 채널의 아이디
      */
     private String channelId = null;
 
-    /**
+    /*
      * 채널 서비스에서 발급한 P2P 채널 임시 사용자 고유 아이디.
      */
     private String userPid = null;
 
-    /**
+    /*
      * 채널 서비스에서 발급한 상대방의 P2P 채널 임시 사용자 고유 아이디.
      */
     private String peerId = null;
 
-    /**
-     * 채널 서비스 연결 여부.<br>
-     * 채널 연결 여부를 체크하는 이유는 Acticity 종료 시 채널 서비스 연결을 확인하고 연결을 해제하기 위해서 임. <br>
-     * 채널 서비스 연결을 해제하면 PlayRTC는 내부 인스턴스를 해제한다.<br>
-     *
-     * @return boolean
+    /*
+     * 채널 서비스 연결 여부.
+     * 채널 연결 여부를 체크하는 이유는 Acticity 종료 시 채널 서비스 연결을 확인하고 연결을 해제하기 위해서 임.
+     * 채널 서비스 연결을 해제하면 PlayRTC는 내부 인스턴스를 해제한다.
      */
     private boolean isChannelConnected = false;
 
@@ -212,15 +217,13 @@ public class PlayRTCHandler extends PlayRTCObserver {
         statReportHandler = new PlayRTCStatsReportHandler(activity);
     }
 
-    /**
+    /*
      * SDK 설정 객체인 PlayRTCConfig를 생성한 후 PlayRTC 인스턴스를 생성.
      * @param runType int
-     * <pre>
-     * 1. 영상, 음성, p2p data
-     * 2. 영상, 음성
-     * 3. 음성, data
-     * 4. p2p data only
-     * </pre>
+     *  - 1. 영상, 음성, p2p data
+     *  - 2. 영상, 음성
+     *  - 3. 음성, data
+     *  - 4. p2p data only
      * @throws UnsupportedPlatformVersionException Android SDK 버전 체크 Exception
      * @throws RequiredParameterMissingException 필수 Parameter 체크 Exception
      */
@@ -240,18 +243,16 @@ public class PlayRTCHandler extends PlayRTCObserver {
 
     }
 
-    /**
-     * PlayRTC 인스턴스 후 PlayRTC 채널 서비스에 P2P 채널 생성을 요청하고 생성된 채널에 입장한다. <br>
+    /*
+     * PlayRTC 인스턴스 후 PlayRTC 채널 서비스에 P2P 채널 생성을 요청하고 생성된 채널에 입장한다.
      * P2P 상대방은 생성된 채널에 connectChannel메소드를 이용하여 입장한다. <br>
-     * 채널이 생성되고 사용자가 등록 되면 채널서비스의 채널 아이디를 PlayRTCObserver#onConnectChannel을 호출하여 전달한다. <br>
+     * 채널이 생성되고 사용자가 등록 되면 채널서비스의 채널 아이디를 PlayRTCObserver#onConnectChannel을 호출하여 전달한다.
      * @param parameters JSONObject, 생성하는 채널 및 peer 데이터 항목을 전달, 데이터는 채널이 close 될때 까지 유지된다.
-     * <pre>
-     * - channel JSONObject, 채널에 대한 부가 정보
-     *   - channelName String, 채널에 대한 이름
-     * - peer JSONObject, peer(사용자)에 대한 부가 정보
-     *   - userId String, User에 대한 ID로  User에 대한 ID로 application에서 사용하는 사용자 아이디
-     *   - userName String, User 이름
-     * </pre>
+     *  - channel JSONObject, 채널에 대한 부가 정보
+     *    - channelName String, 채널에 대한 이름
+     *  - peer JSONObject, peer(사용자)에 대한 부가 정보
+     *    - userId String, User에 대한 ID로 application에서 사용하는 사용자 아이디
+     *    - userName String, User 이름
      * @throws RequiredConfigMissingException 필수 Parameter 체크 Exception
      */
     public void createChannel(JSONObject parameters) throws RequiredConfigMissingException {
@@ -259,16 +260,14 @@ public class PlayRTCHandler extends PlayRTCObserver {
         playrtc.createChannel(parameters);
     }
 
-    /**
-     * 채널 서비스에 생성된 P2P 채널에 입장하여 P2P 연결 수립을 시작한다. <br>
-     * 채널에 사용자가 등록 되면 PlayRTCObserver#onConnectChannel을 호출한다. <br>
+    /*
+     * 채널 서비스에 생성된 P2P 채널에 입장하여 P2P 연결 수립을 시작한다.
+     * 채널에 사용자가 등록 되면 PlayRTCObserver#onConnectChannel을 호출한다.
      * @param channelId String, 채널 서비스에 생성된 채널의 아이디
      * @param parameters JSONObject, 사용자 관련 부가 정보를 전달
-     * <pre>
-     * - peer JSONObject, peer(사용자)에 대한 부가 정보
-     *   - userId String, User에 대한 ID로  User에 대한 ID로 application에서 사용하는 사용자 아이디
-     *   - userName String, User 이름 (Option)
-     * </pre>
+     *  - peer JSONObject, peer(사용자)에 대한 부가 정보
+     *    - userId String, User에 대한 ID로  application에서 사용하는 사용자 아이디
+     *    - userName String, User 이름 (Option)
      * @throws RequiredConfigMissingException  필수 Parameter 체크 Exception
      */
     public void connectChannel(String channelId, JSONObject parameters) throws RequiredConfigMissingException {
@@ -276,7 +275,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         playrtc.connectChannel(channelId, parameters);
     }
 
-    /**
+    /*
      * PlayRTC 인스턴스를 반환한다.
      * @return PlayRTC
      */
@@ -285,7 +284,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         return playrtc;
     }
 
-    /**
+    /*
      * Activity가 onPause 또는 onStop 시 호출하여 PlayRTC의 스트리밍 처리를 Pause 시킨다.
      */
     public void onActivityPause() {
@@ -294,7 +293,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
     }
 
-    /**
+    /*
      * Activity가 onResume 또는 onStart 시 호출하여 PlayRTC의 스트리밍 처리를 Resume 시킨다.
      */
     public void onActivityResume() {
@@ -303,7 +302,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
     }
 
-    /**
+    /*
      * P2P가 종료 되어 객체를 해제할 경우(P2P 종료, Activity Destroy) 호출한다.
      */
     public void close() {
@@ -318,7 +317,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         activity = null;
     }
 
-    /**
+    /*
      * 입장해 있는 채널 서비스의 채널 아이디를 반환한다.
      * @return String
      */
@@ -326,9 +325,9 @@ public class PlayRTCHandler extends PlayRTCObserver {
         return channelId;
     }
 
-    /**
-     * PlayRTC 채널 서비스에 입장하여 발급 받은 사용자 아이디.<br>
-     * 채널 생성/입장 시 전달한 사용자 아이디는 Application 서비스에서 사용하는 아이디로 <br>
+    /*
+     * PlayRTC 채널 서비스에 입장하여 발급 받은 사용자 아이디.
+     * 채널 생성/입장 시 전달한 사용자 아이디는 Application 서비스에서 사용하는 아이디로
      * Peer-Id와는 다르다. Peer-Id는 PlayRTC 서비스에서 사용하는 임시로 발급하는 고유 아이디이다.
      * @return String
      */
@@ -336,9 +335,9 @@ public class PlayRTCHandler extends PlayRTCObserver {
         return userPid;
     }
 
-    /**
-     * 채널 서비스 연결 여부를 반환한다.<br>
-     * 채널 연결 여부를 체크하는 이유는 Acticity 종료 시 채널 서비스 연결을 확인하고 연결을 해제하기 위해서 임. <br>
+    /*
+     * 채널 서비스 연결 여부를 반환한다.
+     * 채널 연결 여부를 체크하는 이유는 Acticity 종료 시 채널 서비스 연결을 확인하고 연결을 해제하기 위해서 임.
      * 채널 서비스 연결을 해제하면 PlayRTC는 내부 인스턴스를 해제한다.<br>
      *
      * @return boolean
@@ -347,9 +346,9 @@ public class PlayRTCHandler extends PlayRTCObserver {
         return isChannelConnected;
     }
 
-    /**
-     * 전/후방 카메라를 전환하는 기능을 제공한다.<br>
-     * P2P 연결 수립 전에는 동작하지 않는다.
+    /*
+     * 전/후방 카메라를 전환하는 기능을 제공한다.
+     * 채널 입장 전에는 동작하지 않는다.
      */
     public void switchVideoCamera() {
         if(playrtc != null) {
@@ -357,9 +356,9 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
     }
 
-    /**
-     * 후방 카메라 사용 시 후방 카메라 플래쉬를 On/Off 하는 기능을 제공한다.<br>
-     * P2P 연결 수립 전, 전방 카메라 사용 시 동작하지 않는다.
+    /*
+     * 후방 카메라 사용 시 후방 카메라 플래쉬를 On/Off 하는 기능을 제공한다.
+     * 채널 입장 전, 전방 카메라 사용 시 동작하지 않는다.
      */
     public void switchBackCameraFlash() {
         if(playrtc != null) {
@@ -367,11 +366,12 @@ public class PlayRTCHandler extends PlayRTCObserver {
             playrtc.setBackCameraFlash(on);
         }
     }
-    /**
-     * PlayRTC 플랫폼 채널을 종료한다. <BR>
-     * 채널을 퇴장하며, 채널에 있는 다른 사용자는 onOtherDisconnectChannel이 호출된다. <br>
-     * onOtherDisconnectChannel이 호출 되는 사용자는 채널 서비스에 입장해 있는 상태이므로, <br>
-     * 새로운 사용자가 채널에 입장하면 P2P연결을 할 수 있다.
+
+    /*
+     * PlayRTC 플랫폼 채널을 종료한다.
+     * 채널을 퇴장하며, 채널에 있는 다른 사용자는 onOtherDisconnectChannel이 호출된다.
+     * onOtherDisconnectChannel이 호출 되는 사용자는 채널 서비스에 입장해 있는 상태이므로,
+     * 새로운 사용자가 채널에 입장하면 P2P 연결을 할 수 있다.
      */
     public void disconnectChannel() {
         if(playrtc != null) {
@@ -382,10 +382,10 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
     }
 
-    /**
-     * PlayRTC 플랫폼 채널을 종료한다.<BR>
-     * 채널 종료를 호출하면 채널에 있는 모든 사용자는 onDisconnectChannel이 호출된다.<br>
-     * onDisconnectChannel이 호출되면 PlayRTC 인스턴스는 더이상 사용할 수 없다.<br>
+    /*
+     * PlayRTC 플랫폼 채널을 종료한다.
+     * 채널 종료를 호출하면 채널에 있는 모든 사용자는 onDisconnectChannel이 호출된다.
+     * onDisconnectChannel이 호출되면 PlayRTC 인스턴스는 더이상 사용할 수 없다.
      * 세로 P2P를 연결하려면 PlayRTC 인스턴스를 다시 생성하여 채널 서비스에 입장해야 한다.
      */
     public void delateChannel() {
@@ -396,8 +396,8 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
     }
 
-    /**
-     * 로컬 음성 스트림을 Mute.<br>
+    /*
+     * 로컬 전송 음성 스트림을 Mute. - 전송 스트림
      * 상대방은 나의 소리가 들리지 않는다.
      * @param on boolean
      */
@@ -406,8 +406,8 @@ public class PlayRTCHandler extends PlayRTCObserver {
             localMedia.setAudioMute(on);
         }
     }
-    /**
-     * 상대방의 음성 스트림을 Mute.<br>
+    /*
+     * 상대방의 수신 음성 스트림 출력을 Mute. - <br>
      * 상대방의 소리가 들리지 않는다.
      * @param on boolean
      */
@@ -417,8 +417,8 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
     }
 
-    /**
-     * 로컬 영상 스트림을 Pause.<br>
+    /*
+     * 로컬 전송 영상 스트림을 Pause. - 전송 스트림 <br>
      * 상대방은 나의 영상이  출력되지 않는다.
      * @param on boolean
      */
@@ -428,8 +428,8 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
     }
 
-    /**
-     * 상대방 영상 스트림을 Pause.<br>
+    /*
+     * 상대방 수신 영상 스트림 출력을 Pause.<br>
      * 상대방의 영상이 출력되지 않는다.
      * @param on boolean
      */
@@ -445,7 +445,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // PlayRTCObserver Implements
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    /**
+    /*
      * 채널 서비스에 채널 생성/입장 성공 시 채널 정보를 전달 받는다.
      * @param obj PlayRTC
      * @param channelId String, 새로 생성한 채널 아이디
@@ -464,9 +464,9 @@ public class PlayRTCHandler extends PlayRTCObserver {
     }
 
 
-    /**
-     * PlayRTCConfig Channel의 ring = true 설정 시 나중에 채널에 입장한 사용자 측에서<br>
-     * 연결 수락 의사를 물어옴. ring 설정은 상호간에 동일해야한다.  <br>
+    /*
+     * PlayRTCConfig Channel의 ring = true 설정 시 나중에 채널에 입장한 사용자 측에서
+     * 연결 수락 의사를 물어옴. ring 설정은 상호간에 동일해야한다.
      * @param obj PlayRTC
      * @param peerId String, 상대방 사용자의 peer 아이디
      * @param peerUid String, 상대방 사용자의 아이디
@@ -503,7 +503,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
 
     }
 
-    /**
+    /*
      * 상대방으로 부터 연결 수락 의사를 수신 함.
      * @param obj PlayRTC
      * @param peerId String, 상대방 사용자의 peer 아이디
@@ -515,7 +515,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         activity.appnedLogMessage(">>["+peerId+"] onReject....");
     }
 
-    /**
+    /*
      * 상대방으로 부터 연결 거부 의사를 수신 함.
      * @param obj PlayRTC
      * @param peerId String, 상대방 사용자의 peer 아이디
@@ -527,10 +527,10 @@ public class PlayRTCHandler extends PlayRTCObserver {
         activity.appnedLogMessage(">>[" + peerId + "] onAccept....");
     }
 
-    /**
-     * 상대방으로부터 User Defined Command(문자열 형식)를 수신. <br>
-     * Application에서 정의한 JSON String 또는 Command 문자열을 주고 받아 원하는 용도로 사용할 수 있다.<br>
-     * 예를 들어 상대방 단말제어.<br>
+    /*
+     * 상대방으로부터 User Defined Command(문자열 형식)를 수신.
+     * Application에서 정의한 JSON String 또는 Command 문자열을 주고 받아 원하는 용도로 사용할 수 있다.
+     * 예를 들어 상대방 단말제어.
      *
      * @param obj PlayRTC
      * @param peerId String, 상대방 사용자의 peer 아이디
@@ -544,9 +544,9 @@ public class PlayRTCHandler extends PlayRTCObserver {
     }
 
 
-    /**
+    /*
      * 로컬 미디어 처리를 위한 PlayRTCMedia 수신 이벤트 처리
-     * 로컬 미디어 PlayRTCMedia객체 전달 <br>
+     * 로컬 미디어 PlayRTCMedia객체 전달
      *
      * @param obj PlayRTC
      * @param media PlayRTCMedia, PlayRTCVideo의 PlayRTCVideoRenderer를 등록하여 화면 출력 처리
@@ -574,7 +574,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         activity.getLocalVideoView().show(400);
 
     }
-    /**
+    /*
      * P2P 연결 시 상대방 미디어 처리를 위한 PlayRTCMedia 수신 이벤트 처리
      * 상대방 미디어 PlayRTCMedia객체 전달 <br>
      * @param obj PlayRTC
@@ -605,7 +605,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
 
 
     }
-    /**
+    /*
      * Data 송수신을 위한 PlayRTCData 수신 이벤트 처리 -> 데이터 채널 사용 설정 시
      * Data-Channel이 생성되면 전달, PlayRTCData(DataChannel) 객체 전달
      * @param obj PlayRTC
@@ -622,12 +622,12 @@ public class PlayRTCHandler extends PlayRTCObserver {
 
     }
 
-    /**
-     * 채널이 종료 되거나, 내가 채널에서 퇴장할 때 호출<br>
-     * deleteChannel을 호출하거나, 내가 disconnectChannel을 호출하면 발생한다.<br>
+    /*
+     * 채널이 종료 되거나, 내가 채널에서 퇴장할 때 호출
+     * deleteChannel을 호출하거나, 내가 disconnectChannel을 호출하면 발생한다.
      * PlayRTC 인스턴스는 재사용 할수 없다.(내부 P2P 객체 헤제됨)
      * @param obj PlayRTC
-     * @param reason String, deleteChannel인 경우 "delete", disconnectChannel인경우 "disconnect"
+     * @param reason String, deleteChannel인 경우 "delete", disconnectChannel인 경우 "disconnect"
      */
     @Override
     public void onDisconnectChannel(final PlayRTC obj, final String reason) {
@@ -650,9 +650,9 @@ public class PlayRTCHandler extends PlayRTCObserver {
         activity.setOnBackPressed(true);
     }
 
-    /**
-     * 상대방이 채널에서 퇴장할 때.<br>
-     * 상대가 disconnectChannel을 호출. <br>
+    /*
+     * 상대방이 채널에서 퇴장할 때.
+     * 상대가 disconnectChannel을 호출.
      * 자신은 아직 채널 서비스에 입장해 있는 상태이므로, 채널 서비스에 추가로 입장한 사용자와 P2P연결을 수립 할 수 있다.
      * @param obj PlayRTC
      * @param peerId String, 상대방 사용자의 peer 아이디
@@ -668,10 +668,13 @@ public class PlayRTCHandler extends PlayRTCObserver {
         // 뷰 생성 시 지정한 배경 색으로 화면을 초기화 한다.
         if(activity.getRemoteVideoView() != null) {
             activity.getRemoteVideoView().bgClearColor();
+
+            // local videoView 크기를 크게 변경
+            activity.getVideoLayer().resizeLocalVideoView(PlayRTCVideoViewGroup.RTCViewSizeType.Full);
         }
     }
 
-    /**
+    /*
      * PlayRTC의 상태 변경 이벤트 처리, PlayRTC의 enum 코드 참고
      * @param obj PlayRTC
      * @param peerId String, 상대방 사용자의 peer 아이디
@@ -692,7 +695,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
     }
 
-    /**
+    /*
      * PlayRTC의 오류 발생 이벤트 처리, PlayRTC의 enum 코드 참고
      * @param obj PlayRTC
      * @param status PlayRTCStatus PlayRTC의 상태 변경 코드 참고
@@ -712,10 +715,10 @@ public class PlayRTCHandler extends PlayRTCObserver {
     }
 
 
-    /**
-     * PlayRTC 서비스 설정 객체를 생성하여 반환한다.<br>
-     * <b> 서비스 설정 </b>
-     * <pre>
+    /*
+     * PlayRTC 서비스 설정 객체를 생성하여 반환한다.
+     *
+     * 서비스 설정
      * - Android Contect, PlayRTC project-ID
      * - 영상 설정
      *   - 영상 전송 : 사용
@@ -725,15 +728,11 @@ public class PlayRTCHandler extends PlayRTCObserver {
      * - P2P 데이터 통신 : 사용
      * - 로그레벨 지정
      *
-     * </pre>
-     *
      * @param runType int
-     * <pre>
-     * 1. 영상, 음성, p2p data
-     * 2. 영상, 음성
-     * 3. 음성, data
-     * 4. p2p data only
-     * </pre>
+     *  - 1. 영상, 음성, p2p data
+     *  - 2. 영상, 음성
+     *  - 3. 음성, data
+     *  - 4. p2p data only
      *
      * @return PlayRTCConfig
      */
@@ -757,8 +756,25 @@ public class PlayRTCHandler extends PlayRTCObserver {
 		     * false 설정 시 SDK는 read-only 모드로 동작하며, 상대방이 영상 스트림을 전송하면 수신이 된다.
 		     */
             config.video.setEnable(true);
-            //전방 카메라 사용
+
+            /*
+             * 카메라 사용
+             * @param  enum CameraType
+		     * - Front,
+		     * - Back
+             */
             config.video.setCameraType(PlayRTCVideoConfig.CameraType.Front);
+
+            /*
+             * Video 영상의 선호 코덱을 지정, default VP8
+             * 상호 SDK 교환과정에서 선호코덱을 사용할 수 있으면 사용됨. 코덱 미지원 시 다른 코덱 사용
+             * v2.2.6
+             * @param enum VideoCodec,
+             *  - VP8
+             *  - VP9
+             *  - H264, Open H.264
+            */
+            config.video.setPreferCodec(VideoCodec.VP8);
             /*
 		     * 영상 해상도 지정 , 기본 640x480
 		     * min - max 범위를 다르게 지정하면 내부적으로 max 해상도 우선 사용
@@ -769,18 +785,40 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.video.setMaxFrameSize(640, 480);
             config.video.setMinFrameSize(640, 480);
 
+            config.video.setMinFrameRate(15);
+            config.video.setMaxFrameRate(30);
+
+            /*
+             * PlayRTC Video-Stream BandWidth를 지정한다.
+             * 600 ~ 2500
+             * default 1500 (640x480)
+             */
+
+            config.bandwidth.setVideoBitrateKbps(1500);
+
             /*
              * 음성 스트림 전송 사용.
              * false 설정 시 SDK는 read-only 모드로 동작하며, 상대방이 음성 스트림을 전송하면 수신이 된다.
              */
-                config.audio.setEnable(true);
-                // 음성 데이터 평균 bitrate 지정,kbps
-                config.bandwidth.setAudioBitrateKbps(35);
+            config.audio.setEnable(true);
+
+            /*
+             * Audio의 선호 코덱을 지정, default ISAC
+             * 상호 SDK 교환과정에서 선호코덱을 사용할 수 있으면 사용됨. 코덱 미지원 시 다른 코덱 사용
+             * v2.2.6
+             * @param codec AudioCodec
+             *  - ISAC,
+             *  - OPUS
+             */
+            config.audio.setPreferCodec(AudioCodec.OPUS);
+
+            // 음성 데이터 평균 bitrate 지정,kbps
+            config.bandwidth.setAudioBitrateKbps(32);
 
             /*
              * SDK 내부에 구현되어 있는 단말기 Sound 출력 장치 제어 기능을 시용하도록 설정
              * 사용자가 직접 기능(AudioManager)을 구현하는 경우 false로 지정
-             * default true, speaker 모드
+             * default true, loud speaker 모드
              *
              * -------------------------------------------------
              * ear-speaker |                | wired-earphone
@@ -789,7 +827,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
              * 근접 센서 감지  | <-----------> |     장치 유형
              *     |       |  장치 연결 감지   |       |
              *     v       |                |       v
-             *  speaker    |                | bluetooth-headset
+             * loud speaker|                | bluetooth-headset
              * -------------------------------------------------
              */
             config.audio.setAudioManagerEnable(true);
@@ -800,22 +838,69 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
         // 영상 + 음성
         else if(runType == 2){
+            /*
+		     * 영상 스트림 전송 사용.
+		     * false 설정 시 SDK는 read-only 모드로 동작하며, 상대방이 영상 스트림을 전송하면 수신이 된다.
+		     */
             config.video.setEnable(true);
-            //전방 카메라 사용
+
+            /*
+             * 카메라 사용
+             * @param  enum CameraType
+		     * - Front,
+		     * - Back
+             */
             config.video.setCameraType(PlayRTCVideoConfig.CameraType.Front);
+
+            /*
+             * Video 영상의 선호 코덱을 지정, default VP8
+             * 상호 SDK 교환과정에서 선호코덱을 사용할 수 있으면 사용됨. 코덱 미지원 시 다른 코덱 사용
+             * v2.2.6
+             * @param enum VideoCodec,
+             *  - VP8
+             *  - VP9
+             *  - H264, Open H.264
+            */
+            config.video.setPreferCodec(VideoCodec.VP8);
             /*
 		     * 영상 해상도 지정 , 기본 640x480
+		     * min - max 범위를 다르게 지정하면 내부적으로 max 해상도 우선 사용
+		     * - 320x240 해상도
+		     * - 640x480 해상도 : 기본 해상도
+		     * - 1280x720 해상도 : 단말기 성능에 따라 영상 품질이 매우 않좋아질 수 있음. 대부분의 단말기 성능 저하 발생
 		     */
             config.video.setMaxFrameSize(640, 480);
             config.video.setMinFrameSize(640, 480);
+
+            config.video.setMinFrameRate(15);
+            config.video.setMaxFrameRate(30);
+
+            /*
+             * PlayRTC Video-Stream BandWidth를 지정한다.
+             * 600 ~ 2500
+             * default 1500 (640x480)
+             */
+
+            config.bandwidth.setVideoBitrateKbps(1500);
 
             /*
              * 음성 스트림 전송 사용.
              * false 설정 시 SDK는 read-only 모드로 동작하며, 상대방이 음성 스트림을 전송하면 수신이 된다.
              */
             config.audio.setEnable(true);
+
+            /*
+             * Audio의 선호 코덱을 지정, default ISAC
+             * 상호 SDK 교환과정에서 선호코덱을 사용할 수 있으면 사용됨. 코덱 미지원 시 다른 코덱 사용
+             * v2.2.6
+             * @param codec AudioCodec
+             *  - ISAC,
+             *  - OPUS
+             */
+            config.audio.setPreferCodec(AudioCodec.OPUS);
+
             // 음성 데이터 평균 bitrate 지정,kbps
-            config.bandwidth.setAudioBitrateKbps(35);
+            config.bandwidth.setAudioBitrateKbps(32);
 
             /*
              * SDK 내부에 구현되어 있는 단말기 Sound 출력 장치 제어 기능을 시용하도록 설정
@@ -838,8 +923,19 @@ public class PlayRTCHandler extends PlayRTCObserver {
              * false 설정 시 SDK는 read-only 모드로 동작하며, 상대방이 음성 스트림을 전송하면 수신이 된다.
              */
             config.audio.setEnable(true);
+
+            /*
+             * Audio의 선호 코덱을 지정, default ISAC
+             * 상호 SDK 교환과정에서 선호코덱을 사용할 수 있으면 사용됨. 코덱 미지원 시 다른 코덱 사용
+             * v2.2.6
+             * @param codec AudioCodec
+             *  - ISAC,
+             *  - OPUS
+             */
+            config.audio.setPreferCodec(AudioCodec.OPUS);
+
             // 음성 데이터 평균 bitrate 지정,kbps
-            config.bandwidth.setAudioBitrateKbps(35);
+            config.bandwidth.setAudioBitrateKbps(32);
 
             /*
              * SDK 내부에 구현되어 있는 단말기 Sound 출력 장치 제어 기능을 시용하도록 설정
@@ -860,7 +956,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.data.setEnable(true);    /* P2P 데이터 교환을 위한 DataChannel 사용 여부 */
         }
 
-        /**
+        /*
          * SDK Console 로그 레벨 지정
          */
         config.log.console.setLevel(CONSOLE_LOG);
