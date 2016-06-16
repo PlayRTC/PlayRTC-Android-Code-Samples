@@ -634,10 +634,10 @@ public class PlayRTCActivity extends Activity {
                         /*
                          * Snapshot 이미지 요청
                          */
-                        videoLayer.getLocalView().snapshot(new SnapshotObserver(){
+                        videoLayer.getLocalView().snapshot(new PlayRTCVideoView.SnapshotObserver(){
 
                             @Override
-                            public void onViewSnapshot(Bitmap image) {
+                            public void onSnapshotImage(Bitmap image) {
                                 int w = image.getWidth();
                                 int h = image.getHeight();
                                 Log.e("SNAP-SHOT", "snapshot Bitmap["+w+"x"+h+"].....");
@@ -656,10 +656,10 @@ public class PlayRTCActivity extends Activity {
                         /*
                          * Snapshot 이미지 요청
                          */
-                        videoLayer.getRemoteView().snapshot(new SnapshotObserver(){
+                        videoLayer.getRemoteView().snapshot(new PlayRTCVideoView.SnapshotObserver(){
 
                             @Override
-                            public void onViewSnapshot(Bitmap image) {
+                            public void onSnapshotImage(Bitmap image) {
                                 int w = image.getWidth();
                                 int h = image.getHeight();
                                 Log.e("SNAP-SHOT", "snapshot Bitmap["+w+"x"+h+"].....");
