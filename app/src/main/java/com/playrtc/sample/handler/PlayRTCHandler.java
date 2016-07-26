@@ -748,6 +748,11 @@ public class PlayRTCHandler extends PlayRTCObserver {
         // 3. Ring : false 연결 수립 여부를 상대방에게 묻지 않음
         config.setRingEnable(false);
 
+        // UserMedia 인스턴스 생성 시점을 지정. default true
+        // true : 채널 입장 후 바로 생성, 화면에 나의 영상을 바로 출력할 수 있다.
+        // false : 채널 입장 후 상대방과의 연결 과정을 시작할 때 생성. blank 화면이 표시됨
+        config.setPrevUserMediaEnable(true);
+
         // 4. Audio/Video/Data Enable runType 타입에 따라 지정
         // 양상 + 음성 + Data
         if(runType == 1) {
@@ -758,7 +763,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.video.setEnable(true);
 
             /*
-             * 카메라 사용
+             * 전방카메라 사용
              * @param  enum CameraType
 		     * - Front,
 		     * - Back
@@ -813,6 +818,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.audio.setPreferCodec(AudioCodec.OPUS);
 
             // 음성 데이터 평균 bitrate 지정,kbps
+            // ~ 64
             config.bandwidth.setAudioBitrateKbps(32);
 
             /*
@@ -845,7 +851,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.video.setEnable(true);
 
             /*
-             * 카메라 사용
+             * 전방카메라 사용
              * @param  enum CameraType
 		     * - Front,
 		     * - Back
@@ -900,6 +906,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.audio.setPreferCodec(AudioCodec.OPUS);
 
             // 음성 데이터 평균 bitrate 지정,kbps
+            // ~ 64
             config.bandwidth.setAudioBitrateKbps(32);
 
             /*
@@ -935,6 +942,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.audio.setPreferCodec(AudioCodec.OPUS);
 
             // 음성 데이터 평균 bitrate 지정,kbps
+            // ~ 64
             config.bandwidth.setAudioBitrateKbps(32);
 
             /*
