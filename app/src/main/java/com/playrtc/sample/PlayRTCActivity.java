@@ -177,6 +177,7 @@ public class PlayRTCActivity extends Activity {
     // Activty의 포커스 여부를 확인
     // 영상 스트림 출력을 위한 PlayRTCVideoView(GLSurfaceView를 상속) 동적 코드 생성
     // 생성 시 스크린 사이즈를 생성자에 넘김
+    // onWindowFocusChanged는 여러번 호출 되므로 관련 객체 초기화를 한번만 실행하도록 해야함.
     // hasFocus = true , 화면보여짐 , onCreate | onResume
     // hasFocus = false , 화면안보임 , onPause | onDestory
     @Override
@@ -260,6 +261,7 @@ public class PlayRTCActivity extends Activity {
             setResult(RESULT_OK, new Intent());
             super.onBackPressed();
         } else {
+            // 만약 채널에 입장한 상태이면 먼저 채널을 종료한다.
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setTitle("PlayRTC");
             alert.setMessage("PlayRTC를 종료하겠습니까?");
@@ -574,7 +576,7 @@ public class PlayRTCActivity extends Activity {
 
 		/* Remote Video Mute 버튼 */
         Button btnMuteRVideo = (Button) this.findViewById(R.id.btn_remote_vmute);
-		/* Remote Video Mute 처리시 상대방 영상 스트림은 화면에만 출력이 안된다. */
+		/* Remote Video Mute 처리시 상대방의 영상 스트림은 수신되나 화면에는 출력이 되지 않는다. */
         btnMuteRVideo.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -590,7 +592,7 @@ public class PlayRTCActivity extends Activity {
 
 		/* Remote Audio Mute 버튼 */
         Button btnMuteRAudio = (Button) this.findViewById(R.id.btn_remote_amute);
-		/* Remote Video Mute 처리시 상대방 영상 스트림은 소리만 출력이 안된다. */
+		/* Remote Video Mute 처리시 상대방 영상 스트림은 수신되나 소리는 출력되지 않는다. */
         btnMuteRAudio.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -625,6 +627,7 @@ public class PlayRTCActivity extends Activity {
         if(snapshotLayer != null && videoLayer != null) {
 
             // Snapshot 버튼과 이미지 배치등의 자식 요소를 동적으로 생성하여 Layout 구성
+            // Snapshot 요청과 이미지를 전달하기 위한 인터페이스 등록
             snapshotLayer.createControls(new SnapshotLayerObserver(){
 
                 @Override

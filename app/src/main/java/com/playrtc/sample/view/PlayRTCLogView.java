@@ -11,16 +11,16 @@ import android.widget.TextView;
 
 import com.playrtc.sample.R;
 
-/**
- * PlayRTC 로그를 출력하기위해 TextView를 확장한 Class<br>
+/*
+ * PlayRTC 로그를 출력하기위해 TextView를 확장한 Class
  * 
- * <pre>
+ *
  * - public void appendLog(final String msg)
  *    로그창 하단에 로그 문자열울 추가하고 스크롤를 하단으로 이동한다.
  * - public void progressLog(final String msg)
  *   로그창 하단의 마지막 라인을 갱신하고 스크롤를 하단으로 이동한다.
  *   데이터 채널 데이터 전송/수신 등의 진척도를 표시하기 위해 사용 
- * </pre>
+ *
  */
 public class PlayRTCLogView extends TextView{
 

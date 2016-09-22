@@ -18,17 +18,17 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Button;
 
-/**
- * 채널 팝업의 리스트뷰에서 사용하는 Adapter class<br>
- * BaseAdapter를 확장 구현 <br>
- * <pre>
- * List&lt;ChannelData&gt; channelList, 채널 데이터 리스트
- * </pre>
- * 리스트의 채널 입장 버튼 틀릭 시 채널 데이터를 전달하기 위해 IChannelListAdapter를 정의 <br>
- * <pre>
+/*
+ * 채널 팝업의 리스트뷰에서 사용하는 Adapter class
+ * BaseAdapter를 확장 구현
+ *
+ * List<ChannelData> channelList, 채널 데이터 리스트
+ *
+ * 리스트의 채널 입장 버튼 틀릭 시 채널 데이터를 전달하기 위해 IChannelListAdapter를 정의
+ *
  * IChannelListAdapter interface
  * - void onSelectListItem(ChannelData data)
- * </pre>
+ *
  *
  * @see android.widget.BaseAdapter
  * @see ChannelData

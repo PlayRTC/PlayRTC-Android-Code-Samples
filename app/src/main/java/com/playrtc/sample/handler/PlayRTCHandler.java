@@ -28,12 +28,12 @@ import org.json.JSONObject;
 import java.io.File;
 
 
-/**
- * PlayRTC 인스턴스를 생성하고, PlayRTC객체의 이벤트 처리를 위해 PlayRTCObserver 인터페이스를 <br>
+/*
+ * PlayRTC 인스턴스를 생성하고, PlayRTC 객체의 이벤트 처리를 위해 PlayRTCObserver 인터페이스를
  * 구현한 PlayRTC-Handler Class
- *  <br><br>
- * <b>PlayRTC 구현 방법</b>
- * <pre>
+ *
+ *
+ * PlayRTC 구현 방법
  * 1. PlayRTCConfig 생성
  *    PlayRTCFactory.createConfig()
  *
@@ -56,41 +56,41 @@ import java.io.File;
  *   PlayRTCChannelViewListener#onClickConnectChannel
  *     playRTC.connectChannel(parameters)
  *
- * 6. 채널 서비스에 채널 생성/입장 성공 후 PlayRTC Connect 직전 이벤트 전달
+ * 5. 채널 서비스에 채널 생성/입장 성공 후 PlayRTC Connect 직전 이벤트 전달
  *   PlayRTCObserver#onConnectChannel(PlayRTC obj, final String channelId, final String reason)
  *
- * 7. 로컬 미디어 처리를 위한 PlayRTCMedia 수신 이벤트 처리
+ * 6. 로컬 미디어 처리를 위한 PlayRTCMedia 수신 이벤트 처리
  *   PlayRTCObserver#onAddLocalStream
  *   PlayRTCMedia 수신 시 영상 출력을 이해 PlayRTCVideoView의 renderer 인터페이스 등록
  *     PlayRTCMedia#setVideoRenderer(PlayRTCVideoView의#getVideoRenderer());
  *
- * 8. P2P 연결 시 상대방 미디어 처리를 위한 PlayRTCMedia 수신 이벤트 처리
+ * 7. P2P 연결 시 상대방 미디어 처리를 위한 PlayRTCMedia 수신 이벤트 처리
  *   PlayRTCObserver#onAddRemoteStream
  *   PlayRTCMedia 수신 시 영상 출력을 이해 PlayRTCVideoView의 renderer 인터페이스 등록
  *     PlayRTCMedia#setVideoRenderer(PlayRTCVideoView의#getVideoRenderer());
  *
- * 9. Data 송수신을 위한  PlayRTCData 수신 이벤트 처리 -> 데이터 채널 사용 설정 시
+ * 8. Data 송수신을 위한  PlayRTCData 수신 이벤트 처리 -> 데이터 채널 사용 설정 시
  *   PlayRTCObserver#onAddDataStream
  *   PlayRTCData 수신 시 수신 이벤트 처리를 이해 PlayRTCDataObserver를 구현한 PlayRTCDataChannelHandler 등록
  *     PlayRTCDataChannelHandler#setDataChannel(data);
  *
- * 10. 상대방 채널 퇴장 이벤트 처리
+ * 9. 상대방 채널 퇴장 이벤트 처리
  *   사용자가  PlayRTC#disconnectChannel을 호출하면 상대방에게 onOtherDisconnectChannel 호출됨.
  *   본인은 onDisconnectChannel 호출
  *   PlayRTCObserver#onOtherDisconnectChannel
  *
  *
- * 11. 채널 종료 이벤트 처리
+ * 10. 채널 종료 이벤트 처리
  *   PlayRTC#deleteChannel을 호출하면 채널의 모든 사용자에게 채널 종료 이벤트가 전달
  *   PlayRTCObserver#onDisconnectChannel
  *
- * 12. 종료 처리
+ * 11. 종료 처리
  *   Back 키 또는 종료 버튼을 누르면 PlayRTC#deleteChannel 또는 PlayRTC#disconnectChannel을 호출
  *   PlayRTCObserver#onDisconnectChannel에서 화면 종료 처리
- * </pre>
- * <br><br>
- * <b>주요 멤버</b>
- * <pre>
+ *
+ *
+ * 주요 멤버
+ *
  * - PlayRTC playrtc
  *     PlayRTC 인스턴스
  *
@@ -106,10 +106,8 @@ import java.io.File;
  *
  * - PlayRTCLogView logView
  *     PlayRTC 로그를 출력하기위해 TextView를 확장한 Class
- * </pre>
- * <br>
- * <b>주요 Method</b>
- * <pre>
+ *
+ * 주요 Method
  * - public void createPlayRTC();
  *   SDK 설정 객체인 PlayRTCConfig를 생성한 후  PlayRTC 인스턴스를 생성.
  *
@@ -140,7 +138,6 @@ import java.io.File;
  * - void delateChannel();
  *   PlayRTC 플랫폼 채널을 종료한다.
  *   채널 종료를 호출하면 채널에 있는 모든 사용자는 onDisconnectChannel이 호출된다.
- * </pre>
  *
  */
 public class PlayRTCHandler extends PlayRTCObserver {
@@ -751,6 +748,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         // UserMedia 인스턴스 생성 시점을 지정. default true
         // true : 채널 입장 후 바로 생성, 화면에 나의 영상을 바로 출력할 수 있다.
         // false : 채널 입장 후 상대방과의 연결 과정을 시작할 때 생성. blank 화면이 표시됨
+        // new v2.2.8
         config.setPrevUserMediaEnable(true);
 
         // 4. Audio/Video/Data Enable runType 타입에 따라 지정
@@ -818,7 +816,8 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.audio.setPreferCodec(AudioCodec.OPUS);
 
             // 음성 데이터 평균 bitrate 지정,kbps
-            // ~ 64
+            // ISAC 32
+            // OPUS 32 ~ 64
             config.bandwidth.setAudioBitrateKbps(32);
 
             /*
@@ -906,7 +905,8 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.audio.setPreferCodec(AudioCodec.OPUS);
 
             // 음성 데이터 평균 bitrate 지정,kbps
-            // ~ 64
+            // ISAC 32
+            // OPUS 32 ~ 64
             config.bandwidth.setAudioBitrateKbps(32);
 
             /*
@@ -942,7 +942,8 @@ public class PlayRTCHandler extends PlayRTCObserver {
             config.audio.setPreferCodec(AudioCodec.OPUS);
 
             // 음성 데이터 평균 bitrate 지정,kbps
-            // ~ 64
+            // ISAC 32
+            // OPUS 32 ~ 64
             config.bandwidth.setAudioBitrateKbps(32);
 
             /*
@@ -971,6 +972,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
 
 		/* SDK 파일 로그 레벨 지정 */
         config.log.file.setLevel(FILE_LOG);
+
 		/* 파일 로그를 남기려면 로그파일 폴더 지정 . [PATH]/yyyyMMdd.log , default 10일간 보존 */
 		/* SDK 파일 로깅을 위한 로그 파일 경로, 파일 로깅을 사용하지 않는다면 Pass */
         File logPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +

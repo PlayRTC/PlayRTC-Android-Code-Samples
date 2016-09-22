@@ -10,9 +10,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-/**
- * PlayRTCVideoView의 Snapshot 기능과 이미지 배치 Layout을 구성하기 위한 부모뷰 그룹 <br>
- * RelativeLayout를 확장하여 Local뷰와 Remote뷰의 Snapshot 버튼과 이미지 출력뷰등을 생성하여 화면을 구성한다.<br>
+/*
+ * PlayRTCVideoView의 Snapshot 기능과 이미지 배치 Layout을 구성하기 위한 부모뷰 그룹
+ * RelativeLayout를 확장하여 Local뷰와 Remote뷰의 Snapshot 버튼과 이미지 출력뷰등을 생성하여 화면을 구성한다.
  */
 public class PlayRTCSnapshotView extends RelativeLayout {
 

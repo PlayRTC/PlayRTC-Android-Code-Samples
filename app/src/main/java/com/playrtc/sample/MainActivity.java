@@ -11,15 +11,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-/**
- * PlayRTC Sample App Main Activity Class <BR>
- * <b> Sample 구현 </b>
- * <pre>
+/*
+ * PlayRTC Sample App Main Activity Class
+ * Sample 구현
+ *
  * 1. 영상, 음성, p2p data
  * 2. 영상, 음성
  * 3. 음성, data
  * 4. p2p data only
- * </pre>
+ *
  */
 public class MainActivity extends Activity {
 
@@ -183,7 +183,7 @@ public class MainActivity extends Activity {
     /**
      * PlayRTCActivity 이동
      *
-     * @param type
+     * @param type int
      * <pre>
      * 1. 영상, 음성, p2p data
      * 2. 영상, 음성

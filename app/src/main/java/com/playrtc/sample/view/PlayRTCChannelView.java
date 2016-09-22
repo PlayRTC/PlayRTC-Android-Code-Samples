@@ -30,18 +30,18 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-/**
- * 채널을 생성하거나 만들어진 채널 목록을 조회하여 채널에 입장하는 UI를 제공하는 RelativeLayout 확장 Class <br>
- * 내부적으로 채널 목록 리스트의 채널 입장 버튼을 눌렀을 때 해당 채널 정보를 전달 받기 위한 IChannelListAdapter구현.<br>
- * 채널 목록을 조회하기 위해 PlayRTC의 getChannelList메소드를 사용하며, 응답 결과를 받기 위해 <br>
- * PlayRTCServiceHelperListener 구현체가 필요하다. <br>
- * 채널 생성/입장 버튼 선택 시 선택 정보를 전달하기 위해 PlayRTCChannelViewListener Interface를 정의. <br>
- * <pre>
+/*
+ * 채널을 생성하거나 만들어진 채널 목록을 조회하여 채널에 입장하는 UI를 제공하는 RelativeLayout 확장 Class
+ * 내부적으로 채널 목록 리스트의 채널 입장 버튼을 눌렀을 때 해당 채널 정보를 전달 받기 위한 IChannelListAdapter구현.
+ * 채널 목록을 조회하기 위해 PlayRTC의 getChannelList메소드를 사용하며, 응답 결과를 받기 위해
+ * PlayRTCServiceHelperListener 구현체가 필요하다.
+ * 채널 생성/입장 버튼 선택 시 선택 정보를 전달하기 위해 PlayRTCChannelViewListener Interface를 정의.
+ *
  * 채널 생성 버튼 선택 시
  * - void onClickCreateChannel(String channelName, String userId, String userName)
  * 채널 입장 버튼 선택 시
  * - void onClickConnectChannel(String channelId, String userId, String userName)
- * </pre>
+ *
  *
  * @see com.sktelecom.playrtc.connector.servicehelper.PlayRTCServiceHelperListener
  * @see ChannelListAdapter.IChannelListAdapter
