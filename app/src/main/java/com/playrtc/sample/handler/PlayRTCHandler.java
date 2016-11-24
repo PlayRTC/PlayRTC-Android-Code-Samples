@@ -436,8 +436,17 @@ public class PlayRTCHandler extends PlayRTCObserver {
         }
     }
 
-
-
+    /*
+     * 카메라 영상 회전 기능. v2.2.9 <br>
+     * 전면 카메라 : 시계 반대방향 회전
+     * 후면카메라 : 시계방향 회잔
+     * @param degree int 0, 90, 180, 270
+     */
+    public void setCameraRotation(int rotation) {
+        if(playrtc != null) {
+            playrtc.setCameraRotation(rotation);
+        }
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // PlayRTCObserver Implements

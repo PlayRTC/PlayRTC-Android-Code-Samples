@@ -73,6 +73,73 @@
 
 			</com.playrtc.sample.view.PlayRTCVideoViewGroup>
 
+			<!-- v2.2.9 카메라 영상 회전 -->
+			<RelativeLayout
+				android:id="@+id/area_camera_degree"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:layout_alignLeft="@id/videoarea"
+				android:layout_alignParentTop="true">
+
+				<Button
+					android:id="@+id/btn_mirror"
+					android:layout_width="70dp"
+					android:layout_height="35dp"
+					android:layout_alignParentTop="true"
+					android:layout_marginTop="20dp"
+					android:textSize="11sp"
+					android:text="Mirror-Off" />
+
+				<TextView
+					android:id="@+id/lb_camera_degree"
+					android:layout_width="55dp"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/btn_mirror"
+					android:layout_marginTop="10dp"
+					android:textSize="12sp"
+					android:textColor="#ff0000"
+					android:text="0도">
+				</TextView>
+
+				<Button
+					android:id="@+id/btn_camera_0"
+					android:layout_width="55dp"
+					android:layout_height="30dp"
+					android:layout_below="@id/lb_camera_degree"
+					android:layout_marginTop="10dp"
+					android:textSize="11sp"
+					android:text="0도" />
+
+				<Button
+					android:id="@+id/btn_camera_90"
+					android:layout_width="55dp"
+					android:layout_height="30dp"
+					android:layout_below="@id/btn_camera_0"
+					android:layout_marginTop="10dp"
+					android:textSize="11sp"
+					android:text="90도" />
+
+				<Button
+					android:id="@+id/btn_camera_180"
+					android:layout_width="55dp"
+					android:layout_height="30dp"
+					android:layout_below="@id/btn_camera_90"
+					android:layout_marginTop="10dp"
+					android:textSize="11sp"
+					android:text="180도" />
+
+				<Button
+					android:id="@+id/btn_camera_270"
+					android:layout_width="55dp"
+					android:layout_height="30dp"
+					android:layout_below="@id/btn_camera_180"
+					android:layout_marginTop="10dp"
+					android:textSize="11sp"
+					android:text="270도" />
+			</RelativeLayout>
+			<!-- v2.2.9 카메라 영상 회정 -->
+
 			<com.playrtc.sample.view.PlayRTCLogView
 				android:id="@+id/logtext"
 				android:layout_width="360dp"

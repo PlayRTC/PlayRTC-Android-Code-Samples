@@ -236,7 +236,7 @@ public class PlayRTCVideoViewGroup extends RelativeLayout {
 			 */
             //localView = new PlayRTCVideoView(this.getContext(), displaySize, true);
             localView = new LocalVideoView(this.getContext());
-            localView.setMirror(true);
+            localView.setMirror(false);
 			/*
 			 * 화면 배경색을 지정한다. R,G,B,A 0 ~ 255 정수
 			 * 영상 스트림이 출력 되기 전, bgClearColor() 호출 시 지정한 색으로 배경을 칠한다.
@@ -344,7 +344,7 @@ public class PlayRTCVideoViewGroup extends RelativeLayout {
          *        주로 로컬 영상(전방 카메라 사용)의 경우 거울 모드로 지정한다.
          */
 
-        localView.setMirror(true);
+        localView.setMirror(false);
         localView.setBgClearColor(200, 200, 200, 255);
         localView.setVideoFrameObserver(new PlayRTCVideoView.VideoRendererObserver(){
             @Override

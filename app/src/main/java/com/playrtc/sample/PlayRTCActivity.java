@@ -21,6 +21,7 @@ import com.playrtc.sample.handler.PlayRTCChannelViewListener;
 import com.playrtc.sample.view.PlayRTCChannelView;
 import com.playrtc.sample.view.PlayRTCLogView;
 import com.playrtc.sample.view.PlayRTCVideoViewGroup;
+import com.playrtc.sample.view.LocalVideoView;
 import com.playrtc.sample.view.PlayRTCSnapshotView;
 import com.playrtc.sample.view.PlayRTCSnapshotView.SnapshotLayerObserver;
 
@@ -621,6 +622,77 @@ public class PlayRTCActivity extends Activity {
                 }
             });
         }
+
+        /* 카메라 영상 회전 기능 버튼 */
+        RelativeLayout pannelCameraDegree = (RelativeLayout)this.findViewById(R.id.area_camera_degree);
+        if (playrtcType == 1 || playrtcType == 2) {
+            Button cameraRotation0 = (Button)findViewById(R.id.btn_camera_0);
+            cameraRotation0.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setCameraRotation(0);
+                }
+            });
+            Button cameraRotation90 = (Button) this.findViewById(R.id.btn_camera_90);
+            cameraRotation90.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setCameraRotation(90);
+                }
+            });
+            Button cameraRotation180 = (Button) this.findViewById(R.id.btn_camera_180);
+            cameraRotation180.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setCameraRotation(180);
+                }
+            });
+            Button cameraRotation270 = (Button) this.findViewById(R.id.btn_camera_270);
+            cameraRotation270.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setCameraRotation(270);
+                }
+            });
+
+            Button btnMirror = (Button) this.findViewById(R.id.btn_mirror);
+            btnMirror.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Button btn = (Button)v;
+                    LocalVideoView view = videoLayer.getLocalView();
+                    boolean isMirror = view.isMirror();
+                    if(isMirror) {
+                        btn.setText("Mirror-Off");
+                        view.setMirror(false);
+                    }
+                    else {
+                        btn.setText("Mirror-On");
+                        view.setMirror(true);
+                    }
+                }
+            });
+        }
+        else {
+            pannelCameraDegree.setVisibility(View.GONE);
+        }
+
+
+    }
+
+    /**
+     * 카메라 영상 회전 기능. v2.2.9
+     * @param degree int 0 , 90, 180, 270
+     */
+    private void setCameraRotation(int degree) {
+
+        if(playrtcHandler != null) {
+
+            playrtcHandler.setCameraRotation(degree);
+            TextView text = (TextView)findViewById(R.id.lb_camera_degree);
+            text.setText(degree+ "도");
+        }
+
     }
 
     private void initSnapshotControlls() {
