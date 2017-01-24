@@ -453,7 +453,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
 
     /**
      * 현재 카메라의 Zoom 설정 범위를 반환한다. <br>
-     * v2.3.0
+     * v2.2.10
      * @return PlayRTCRange<Integer>
      */
     public PlayRTCRange<Integer> getCameraZoomRange() {
@@ -466,7 +466,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
 
     /**
      * 현재 카메라의 Zoom 설정 level을 반환한다.<br>
-     * v2.3.0
+     * v2.2.10
      * @return int
      */
     public int getCurrentCameraZoom() {
@@ -479,7 +479,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
     /**
      * 현재 카메라의 Zoom level을 지정한다.<br>
      * 지정 가능한 값은 범위는 getCameraZoomRange()의 min ~ max<br>
-     * v2.3.0
+     * v2.2.10
      * @return boolean
      */
     public boolean setCameraZoom(int value) {
@@ -518,7 +518,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
     /**
      * 현재 사용중인 카메라가 전달받은 WhiteBalance를 지원 하는지 여부를 검사한다.<br>
      * 단말기마다 지원 여부가 다름  <br>
-     * v2.3.0
+     * v2.2.10
      * @param whiteBalance PlayRTCWhiteBalance
      * <pre>
      * - Auto
@@ -543,7 +543,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
     /**
      * 현재 사용중인 카메라의 WhiteBalance를 지정한다.<br>
      * 단말기에 따라 WhiteBalance를 지원하지 안ㄹ을 수 있음<br>
-     * v2.3.0
+     * v2.2.10
      * @param whiteBalance PlayRTCWhiteBalance
      * <pre>
      * - Auto
@@ -566,6 +566,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
 
     /**
      * 현재 사용중인 카메라의 노출 보정값 설정 범위를 반환한다.<br>
+     * v2.2.10
      * maximim 값이 0 이면 지원 않함.
      * @return PlayRTCRange<Integer>
      */
@@ -580,7 +581,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
     /**
      * 현재 사용중인 카메라의 노출 보정값 설정 범위를 반환한다. <br>
      * 0 이면 노출 보정이 지원안됨<br>
-     * v2.3.0
+     * v2.2.10
      * @return int
      */
     public int getCameraExposureCompensation() {
@@ -595,7 +596,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
      * 현재 사용중인 카메라의 노출 보정값을 지정한다.<br>
      * maximim값이 0이면  노출이 조정되지 않는다.<br>
      * 노출 보정이 지원되는지 알아보기 위해 유효한 값 범위(getCameraExposureCompensationRange() 호출하여)를 확인해야한다<br>
-     * v2.3.0
+     * v2.2.10
      * @param value int
      * @return boolean, 실행 여부
      */
