@@ -73,72 +73,338 @@
 
 			</com.playrtc.sample.view.PlayRTCVideoViewGroup>
 
-			<!-- v2.2.9 카메라 영상 회전 -->
+			<!-- 영상 미러모드 -->
+			<TextView
+				android:id="@+id/lb_btn_mirror"
+				android:layout_width="80dp"
+				android:layout_height="wrap_content"
+				android:layout_alignLeft="@id/videoarea"
+				android:layout_alignParentTop="true"
+				android:gravity="center"
+				android:layout_marginTop="6dp"
+				android:textSize="12sp"
+				android:textColor="#ff0000"
+				android:text="미러-Off">
+			</TextView>
+			<Button
+				android:id="@+id/btn_mirror"
+				android:layout_width="80dp"
+				android:layout_height="35dp"
+				android:layout_alignLeft="@id/videoarea"
+				android:layout_below="@id/lb_btn_mirror"
+				android:textSize="11sp"
+				android:text="미러모드" />
 			<RelativeLayout
-				android:id="@+id/area_camera_degree"
+				android:id="@+id/btn_mirror_layer"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:orientation="vertical"
-				android:layout_alignLeft="@id/videoarea"
-				android:layout_alignParentTop="true">
+				android:layout_toRightOf="@id/btn_mirror"
+				android:layout_alignTop="@id/btn_mirror"
+				android:visibility="gone">
 
 				<Button
-					android:id="@+id/btn_mirror"
-					android:layout_width="70dp"
+					android:id="@+id/btn_mirror_on"
+					android:layout_width="80dp"
 					android:layout_height="35dp"
 					android:layout_alignParentTop="true"
-					android:layout_marginTop="20dp"
 					android:textSize="11sp"
-					android:text="Mirror-Off" />
+					android:text="미러-On" />
 
-				<TextView
-					android:id="@+id/lb_camera_degree"
-					android:layout_width="55dp"
-					android:layout_height="wrap_content"
-					android:layout_below="@id/btn_mirror"
-					android:layout_marginTop="10dp"
-					android:textSize="12sp"
-					android:textColor="#ff0000"
-					android:text="0도">
-				</TextView>
+				<Button
+					android:id="@+id/btn_mirror_off"
+					android:layout_width="80dp"
+					android:layout_height="35dp"
+					android:layout_below="@id/btn_mirror_on"
+					android:layout_marginTop="2dp"
+					android:textSize="11sp"
+					android:text="미러-Off" />
+			</RelativeLayout>
+
+			<!-- v2.2.9 카메라 영상 회전 -->
+			<TextView
+				android:id="@+id/lb_camera_degree"
+				android:layout_width="80dp"
+				android:layout_height="wrap_content"
+				android:layout_alignLeft="@id/videoarea"
+				android:layout_below="@id/btn_mirror"
+				android:layout_marginTop="6dp"
+				android:gravity="center"
+				android:textSize="12sp"
+				android:textColor="#ff0000"
+				android:text="0도 회전">
+			</TextView>
+			<Button
+				android:id="@+id/btn_camera_degree"
+				android:layout_width="80dp"
+				android:layout_height="35dp"
+				android:layout_alignLeft="@id/videoarea"
+				android:layout_below="@id/lb_camera_degree"
+				android:textSize="11sp"
+				android:text="영상회전" />
+			<RelativeLayout
+				android:id="@+id/btn_camera_degree_layer"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:layout_toRightOf="@id/btn_camera_degree"
+				android:layout_alignTop="@id/btn_camera_degree"
+				android:visibility="gone">
 
 				<Button
 					android:id="@+id/btn_camera_0"
-					android:layout_width="55dp"
-					android:layout_height="30dp"
-					android:layout_below="@id/lb_camera_degree"
-					android:layout_marginTop="10dp"
+					android:layout_width="70dp"
+					android:layout_height="35dp"
+					android:layout_alignParentTop="true"
 					android:textSize="11sp"
 					android:text="0도" />
 
 				<Button
 					android:id="@+id/btn_camera_90"
-					android:layout_width="55dp"
-					android:layout_height="30dp"
+					android:layout_width="70dp"
+					android:layout_height="35dp"
 					android:layout_below="@id/btn_camera_0"
-					android:layout_marginTop="10dp"
+					android:layout_marginTop="4dp"
 					android:textSize="11sp"
 					android:text="90도" />
 
 				<Button
 					android:id="@+id/btn_camera_180"
-					android:layout_width="55dp"
-					android:layout_height="30dp"
+					android:layout_width="70dp"
+					android:layout_height="35dp"
 					android:layout_below="@id/btn_camera_90"
-					android:layout_marginTop="10dp"
+					android:layout_marginTop="4dp"
 					android:textSize="11sp"
 					android:text="180도" />
 
 				<Button
 					android:id="@+id/btn_camera_270"
-					android:layout_width="55dp"
-					android:layout_height="30dp"
+					android:layout_width="70dp"
+					android:layout_height="35dp"
 					android:layout_below="@id/btn_camera_180"
-					android:layout_marginTop="10dp"
+					android:layout_marginTop="4dp"
 					android:textSize="11sp"
 					android:text="270도" />
 			</RelativeLayout>
-			<!-- v2.2.9 카메라 영상 회정 -->
+			<!-- v2.2.9 카메라 영상 회전 -->
+
+			<!-- v2.3.0 카메라 Zoom -->
+			<TextView
+				android:id="@+id/lb_camera_zoom"
+				android:layout_width="80dp"
+				android:layout_height="wrap_content"
+				android:layout_alignLeft="@id/videoarea"
+				android:layout_below="@id/btn_camera_degree"
+				android:layout_marginTop="6dp"
+				android:textSize="12sp"
+				android:textColor="#ff0000"
+				android:gravity="center"
+				android:text="Zoom :0">
+			</TextView>
+			<Button
+				android:id="@+id/btn_camera_zoom"
+				android:layout_width="80dp"
+				android:layout_height="35dp"
+				android:layout_alignLeft="@id/videoarea"
+				android:layout_below="@id/lb_camera_zoom"
+				android:textSize="11sp"
+				android:text="영상줌" />
+			<RelativeLayout
+				android:id="@+id/btn_camera_zoom_layer"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:layout_toRightOf="@id/btn_camera_zoom"
+				android:layout_centerVertical="true"
+				android:visibility="gone">
+				<TextView
+					android:id="@+id/lb_camera_zoom_max"
+					android:layout_width="wrap_content"
+					android:layout_height="20dp"
+					android:textSize="12sp"
+					android:textColor="#ff0000"
+					android:layout_alignParentTop="true"
+					android:layout_centerHorizontal="true"
+					android:text="0" />
+
+				<com.playrtc.sample.view.PlayRTCVerticalSeekBar
+					android:id="@+id/seekbar_camera_zoom"
+					android:layout_width="wrap_content"
+					android:layout_height="240dp"
+					android:layout_below="@id/lb_camera_zoom_max"
+					android:max="0"
+					android:progress="0"
+					android:thumb="@drawable/seekbar_thumb"
+					android:thumbOffset="2dp"
+					style="@style/VerticalSeekBar"/>
+
+				<TextView
+					android:id="@+id/lb_camera_zoom_min"
+					android:layout_width="wrap_content"
+					android:layout_height="20dp"
+					android:textSize="12sp"
+					android:textColor="#ff0000"
+					android:layout_centerHorizontal="true"
+					android:layout_below="@id/seekbar_camera_zoom"
+					android:text="0"/>
+			</RelativeLayout>
+			<!-- v2.3.0 카메라 Zoom -->
+
+			<!-- v2.3.0 카메라 white balance -->
+			<TextView
+				android:id="@+id/white_balance_label"
+				android:layout_width="80dp"
+				android:layout_height="wrap_content"
+				android:textSize="12sp"
+				android:layout_below="@id/btn_camera_zoom"
+				android:layout_alignLeft="@id/videoarea"
+				android:layout_marginTop="6dp"
+				android:textColor="#ff0000"
+				android:gravity="center"
+				android:text="자동" />
+
+			<Button
+				android:id="@+id/btn_white_balance"
+				android:layout_width="80dp"
+				android:layout_height="36dp"
+				android:layout_below="@id/white_balance_label"
+				android:layout_alignLeft="@id/videoarea"
+				android:textSize="11sp"
+				android:text="화이트밸런스" />
+
+			<RelativeLayout
+				android:id="@+id/btn_white_balance_layer"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_toRightOf="@id/btn_white_balance"
+				android:layout_alignBottom="@id/btn_white_balance"
+				android:visibility="gone">
+
+				<Button
+					android:id="@+id/btn_white_balance_auto"
+					android:layout_width="100dp"
+					android:layout_height="34dp"
+					android:layout_alignParentLeft="true"
+					android:textSize="12sp"
+					android:text="자동" />
+
+				<Button
+					android:id="@+id/btn_white_balance_incandescent"
+					android:layout_width="100dp"
+					android:layout_height="34dp"
+					android:layout_below="@id/btn_white_balance_auto"
+					android:layout_alignParentLeft="true"
+					android:textSize="12sp"
+					android:text="백열등" />
+
+				<Button
+					android:id="@+id/btn_white_balance_fluoreScent"
+					android:layout_width="100dp"
+					android:layout_height="34dp"
+					android:layout_below="@id/btn_white_balance_auto"
+					android:layout_toRightOf="@id/btn_white_balance_incandescent"
+					android:textSize="12sp"
+					android:text="형광등" />
+
+
+				<Button
+					android:id="@+id/btn_white_balance_daylight"
+					android:layout_width="100dp"
+					android:layout_height="34dp"
+					android:layout_below="@id/btn_white_balance_incandescent"
+					android:layout_alignParentLeft="true"
+					android:textSize="12sp"
+					android:text="햇빛" />
+
+				<Button
+					android:id="@+id/btn_white_balance_cloudydaylight"
+					android:layout_width="100dp"
+					android:layout_height="34dp"
+					android:layout_below="@id/btn_white_balance_incandescent"
+					android:layout_toRightOf="@id/btn_white_balance_daylight"
+					android:textSize="12sp"
+					android:text="흐림" />
+				<Button
+					android:id="@+id/btn_white_balance_twilight"
+					android:layout_width="100dp"
+					android:layout_height="34dp"
+					android:layout_below="@id/btn_white_balance_daylight"
+					android:layout_alignParentLeft="true"
+					android:textSize="12sp"
+					android:text="저녁빛" />
+
+				<Button
+					android:id="@+id/btn_white_balance_shade"
+					android:layout_width="100dp"
+					android:layout_height="34dp"
+					android:layout_below="@id/btn_white_balance_daylight"
+					android:layout_toRightOf="@id/btn_white_balance_twilight"
+					android:textSize="12sp"
+					android:text="그늘" />
+
+			</RelativeLayout>
+			<!-- v2.3.0 카메라 white balance -->
+
+			<!-- v2.3.0 카메라 노출 보정 -->
+			<TextView
+				android:id="@+id/lb_exposure_compensation"
+				android:layout_width="80dp"
+				android:layout_height="wrap_content"
+				android:layout_alignLeft="@id/videoarea"
+				android:layout_below="@id/btn_white_balance"
+				android:layout_marginTop="2dp"
+				android:textSize="12sp"
+				android:textColor="#ff0000"
+				android:gravity="center"
+				android:text="노출: 0" />
+			<Button
+				android:id="@+id/btn_exposure_compensation"
+				android:layout_width="80dp"
+				android:layout_height="36dp"
+				android:layout_below="@id/lb_exposure_compensation"
+				android:layout_alignLeft="@id/videoarea"
+				android:textSize="12sp"
+				android:text="노출조정" />
+			<RelativeLayout
+				android:id="@+id/btn_exposure_compensation_layer"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_toRightOf="@id/btn_exposure_compensation"
+				android:layout_centerVertical="true"
+				android:visibility="gone">
+
+				<TextView
+					android:id="@+id/lb_exposure_compensation_max"
+					android:layout_width="wrap_content"
+					android:layout_height="20dp"
+					android:textSize="12sp"
+					android:textColor="#ff0000"
+					android:layout_alignParentTop="true"
+					android:layout_centerHorizontal="true"
+					android:text="0" />
+
+				<com.playrtc.sample.view.PlayRTCVerticalSeekBar
+					android:id="@+id/seekbar_exposure_compensation"
+					android:layout_width="wrap_content"
+					android:layout_height="240dp"
+					android:layout_below="@id/lb_exposure_compensation_max"
+					android:max="0"
+					android:progress="0"
+					android:thumb="@drawable/seekbar_thumb"
+					android:thumbOffset="2dp"
+					style="@style/VerticalSeekBar"/>
+
+				<TextView
+					android:id="@+id/lb_exposure_compensation_min"
+					android:layout_width="wrap_content"
+					android:layout_height="20dp"
+					android:textSize="12sp"
+					android:textColor="#ff0000"
+					android:layout_centerHorizontal="true"
+					android:layout_below="@id/seekbar_exposure_compensation"
+					android:text="0"/>
+			</RelativeLayout>
+			<!-- v2.3.0 카메라 노출 보정 -->
 
 			<com.playrtc.sample.view.PlayRTCLogView
 				android:id="@+id/logtext"

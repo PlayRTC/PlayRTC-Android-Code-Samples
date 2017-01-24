@@ -38,7 +38,7 @@
      
 
     <LinearLayout
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="1dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -58,7 +58,7 @@
     </LinearLayout>
     
 	<LinearLayout
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="1dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -78,7 +78,7 @@
     </LinearLayout>
     
     <LinearLayout
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="1dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -96,4 +96,137 @@
 	        android:textColor="#000000"
 	        android:text="@string/sample_playrtc4" />
     </LinearLayout>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<RadioGroup
+			android:id="@+id/radio_ring_group"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true">
+			<RadioButton
+				android:id="@+id/radio_ring_false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textColor="#000000"
+				android:textSize="16sp"
+				android:text="Ring 사용안함"
+				android:checked="true"/>
+
+			<RadioButton
+				android:id="@+id/radio_ring_true"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="5dp"
+				android:textColor="#000000"
+				android:textSize="16sp"
+				android:text="Ring 사용" />
+		</RadioGroup>
+
+
+		<RelativeLayout
+			android:orientation="horizontal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_toRightOf="@+id/radio_ring_group"
+			android:layout_marginRight="5dp">
+
+			<TextView
+				android:id="@+id/label_video_codec"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="16sp"
+				android:gravity="center_vertical|left"
+				android:textColor="#000000"
+				android:text="Video Codec"
+				android:layout_centerVertical="true"/>
+
+			<RadioGroup
+				android:id="@+id/radio_video_codec_group"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_toRightOf="@id/label_video_codec">
+
+
+				<RadioButton
+					android:id="@+id/radio_video_codec_vp8"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textColor="#000000"
+					android:textSize="16sp"
+					android:text="VP8"
+					android:checked="true"/>
+
+				<RadioButton
+					android:id="@+id/radio_video_codec_vp9"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="5dp"
+					android:textColor="#000000"
+					android:textSize="16sp"
+					android:text="VP9" />
+
+				<RadioButton
+					android:id="@+id/radio_video_codec_h264"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="20dp"
+					android:textColor="#000000"
+					android:textSize="16sp"
+					android:text="H264" />
+			</RadioGroup>
+		</RelativeLayout>
+
+		<RelativeLayout
+			android:orientation="horizontal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_toRightOf="@+id/radio_ring_group"
+			android:layout_marginRight="5dp">
+
+			<TextView
+				android:id="@+id/label_audio_codec"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="16sp"
+				android:gravity="center_vertical|left"
+				android:textColor="#000000"
+				android:text="Audio Codec"
+				android:layout_centerVertical="true"/>
+
+			<RadioGroup
+				android:id="@+id/radio_audio_codec_group"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_toRightOf="@id/label_audio_codec">
+
+
+				<RadioButton
+					android:id="@+id/radio_audio_codec_isac"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textColor="#000000"
+					android:textSize="16sp"
+					android:text="ISAC"
+					android:checked="true"/>
+
+				<RadioButton
+					android:id="@+id/radio_audio_codec_opus"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textColor="#000000"
+					android:textSize="16sp"
+					android:text="OPUS" />
+
+			</RadioGroup>
+		</RelativeLayout>
+	</RelativeLayout>
 </LinearLayout>

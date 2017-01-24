@@ -1,15 +1,16 @@
 package com.playrtc.sample;
 
 import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.util.Log;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioGroup;
 
 /*
  * PlayRTC Sample App Main Activity Class
@@ -49,6 +50,12 @@ public class MainActivity extends Activity {
             "android.permission.BLUETOOTH_ADMIN",
             "android.permission.WRITE_EXTERNAL_STORAGE"
     };
+
+
+    private String channelRing = "false";
+    private String videoCodec = "vp8";
+    private String audioCodec = "isac";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +128,9 @@ public class MainActivity extends Activity {
      * Sample Type 별 버튼 이벤트 등록
      */
     private void initUIControls() {
+
+
+
         // 영상 + 음성 + Data Sample
         this.findViewById(R.id.btn_go_sample1).setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -147,6 +157,49 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 excutePlayRTCSample(4);
+            }
+        });
+
+        ((RadioGroup)findViewById(R.id.radio_ring_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.radio_ring_false) {
+                    channelRing = "false";
+                }
+                else {
+                    channelRing = "true";
+                }
+
+            }
+        });
+        ((RadioGroup)findViewById(R.id.radio_video_codec_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.radio_video_codec_vp8) {
+                    videoCodec = "vp8";
+                }
+                else if(checkedId == R.id.radio_video_codec_vp9) {
+                    videoCodec = "vp9";
+                }
+                else {
+                    videoCodec = "h264";
+                }
+
+            }
+        });
+        ((RadioGroup)findViewById(R.id.radio_audio_codec_group)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.radio_audio_codec_isac) {
+                    audioCodec = "isac";
+                }
+                else {
+                    audioCodec = "opus";
+                }
+
             }
         });
     }
@@ -195,6 +248,9 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(MainActivity.this, PlayRTCActivity.class);
         // PlayRTC Sample 유형 전달
         intent.putExtra("type", type);
+        intent.putExtra("channelRing", channelRing);
+        intent.putExtra("videoCodec", videoCodec);
+        intent.putExtra("audioCodec", audioCodec);
         MainActivity.this.startActivityForResult(intent, LAUNCHED_PLAYRTC);
     }
 
