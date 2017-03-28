@@ -815,18 +815,29 @@ public class PlayRTCHandler extends PlayRTCObserver {
         activity.setOnBackPressed(true);
     }
 
-    /*
-     * 상대방이 채널에서 퇴장할 때.
-     * 상대가 disconnectChannel을 호출.
-     * 자신은 아직 채널 서비스에 입장해 있는 상태이므로, 채널 서비스에 추가로 입장한 사용자와 P2P연결을 수립 할 수 있다.
+    /**
+     * 상대방이 채널에서 퇴장할 때.<br>
+     * 상대가 disconnectChannel을 호출. <br>
+     * 자신은 아직 채널 서비스에 입장해 있는 상태이므로, 채널 서비스에 추가로 입장한 사용자와 P2P연결을 수립 할 수 있다. <br>
+     * v2.2.11
      * @param obj PlayRTC
      * @param peerId String, 상대방 사용자의 peer 아이디
      * @param peerUid String, 상대방 사용자의 아이디
+     * @param reason String, "disconnect", "timeout"
      */
     @Override
-    public void onOtherDisconnectChannel(final PlayRTC obj, final String peerId, final String peerUid) {
-        Utils.showToast(activity, "[" + peerId + "]가 채널에서 퇴장하였습니다....");
-        activity.appnedLogMessage("[" + peerId + "]가 채널에서 퇴장하였습니다....");
+    public void onOtherDisconnectChannel(final PlayRTC obj, final String peerId, final String peerUid, final String reason) {
+
+        String notiMsg = "";
+        if(reason != null && reason.equals("timeout")) {
+            notiMsg = "[" + peerUid + "]님의 네트워크 연결이 해제되었습니다....";
+        }
+        else {
+            notiMsg = "[" + peerUid + "]님이 채널에서 퇴장하였습니다....";
+        }
+
+        Utils.showToast(activity, notiMsg);
+        activity.appnedLogMessage(notiMsg);
         statReportHandler.stop();
 
         // 상대방 스트림이 멈추면 View에 마지막 화면 잔상이 남는다.
