@@ -617,7 +617,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
      * @param reason String, createChannel은 "create", connectChannel은 "connect"
      */
     @Override
-    public void onConnectChannel(final PlayRTC obj, final String channelId, final String reason) {
+    public void onConnectChannel(final PlayRTC obj, final String channelId, final String reason, final String channelType) {
         if(reason.equals("create")) {
             // 채널 팝업 뷰에 채널 아이디를 전달하여 화면에 표시
             activity.getChannelInfoPopup().setChannelId(channelId);
@@ -867,7 +867,7 @@ public class PlayRTCHandler extends PlayRTCObserver {
         // 연결 수립 이후 네트워크 상태에 따라 연결 상태가 PeerDisconnected <-> PeerConnected 상태를 반복할 수 있다.
         if(status == PlayRTCStatus.PeerSuccess) {
             //P2P 상태 리포트 구동 시작
-            statReportHandler.start(obj);
+            statReportHandler.start(obj, peerId);
         }
     }
 

@@ -20,10 +20,10 @@ public class PlayRTCStatsReportHandler  implements PlayRTCStatsReportObserver {
 		this.activity = activity;
 	}
 	
-	public void start(PlayRTC playrtc) {
+	public void start(PlayRTC playrtc, String peerId) {
 
 		if(playrtc != null) {
-			playrtc.startStatsReport(TIMER_INTERVAL, (PlayRTCStatsReportObserver)this);
+			playrtc.startStatsReport(TIMER_INTERVAL, (PlayRTCStatsReportObserver)this, peerId);
 		}
         this.playrtc = playrtc;
 	}
